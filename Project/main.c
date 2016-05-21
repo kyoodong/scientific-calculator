@@ -62,41 +62,51 @@ int main(void) {
 	int menuChoice;
 	int subMenu;
 
-	printf("\tMenu\n");
-	printf("1. Calculator\n");
-	printf("2. Scheduler\n");
-	printf("3. End\n");
+	while(1){
+		printf("\tMenu\n");
+		printf("1. Calculator\n");
+		printf("2. Scheduler\n");
+		printf("3. End\n");
 
-	scanf("%d", &menuChoice);
-	switch(menuChoice) {
-		case 1:
-			// 계산기
-			calculator();
-			break;
+		scanf("%d", &menuChoice);
+		switch(menuChoice) {
+			case 1:
+				// 계산기
+				calculator();
+				break;
 
-		case 2:
-			while (1) {
-				// 스케쥴러
-				subMenu = schedulerMenu();
-				switch(subMenu) {
-					case 1:
-						insertSchedule(mScheduleCount);
-						break;
+			case 2:
+				while (1) {
+					// 스케쥴러
+					subMenu = schedulerMenu();
+					switch(subMenu) {
+						case 1:
+							insertSchedule(mScheduleCount);
+							break;
 
-					case 2:
-						deleteSchedule();
-						break;
+						case 2:
+							deleteSchedule();
+							break;
 
-					case 3:
-						scheduler();
+						case 3:
+							scheduler();
+							break;
+
+						case 4:
+							system("clear");
+							break;
+					}
+					if(subMenu == 4)
 						break;
 				}
-			}
-			break;
+				break;
 
-		case 3:
-			// 종료
-			printf("종료됩니다.\n");
+			case 3:
+				// 종료
+				printf("종료됩니다.\n");
+				break;
+		}
+		if(menuChoice == 3)
 			break;
 	}
 	return 0;
@@ -139,7 +149,7 @@ int isEqual(char* str1, char* str2) {
 void copyStr(char* fromStr, char* toStr) {
 	while(*fromStr != '\0')
 		*toStr++ = *fromStr++;
-	 	*toStr = 0;
+	*toStr = 0;
 }
 
 // 스케줄 삭제
@@ -207,8 +217,8 @@ void insertSchedule(int scheduleCount) {
 		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day) {
 			char answer;
 			printf("해당 날짜에 이미 일정이 있습니다. 덮어 씌우시겠습니까? (Y or N)");
-			getchar();
 			answer = getchar();
+			getchar();
 			// 덮어씌우기
 			if (answer == 'Y' || answer == 'y') {
 				scheduleCount = i;
@@ -225,7 +235,6 @@ void insertSchedule(int scheduleCount) {
 	if (!overwrite)
 		return;
 
-	printf("count = %d\n", scheduleCount);
 	mScheduleYear[scheduleCount] = year;
 	mScheduleMonth[scheduleCount] = month;
 	mScheduleDay[scheduleCount] = day;
@@ -343,7 +352,7 @@ void scheduler() {
 		year = mScheduleYear[i];
 		month = mScheduleMonth[i];
 		day = mScheduleDay[i];
-		
+
 		printf("\t\t\t\t\t\t %d년 %d월\n\n", year, month);
 
 		// 캘린더 출력
