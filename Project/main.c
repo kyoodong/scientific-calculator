@@ -64,9 +64,9 @@ int main(void) {
 
 	while(1){
 		printf("\tMenu\n");
-		printf("1. Calculator\n");
-		printf("2. Scheduler\n");
-		printf("3. End\n");
+		printf("1) 공학용 계산기\n");
+		printf("2) 스케줄 관리\n");
+		printf("3) 프로그램 종료\n");
 
 		scanf("%d", &menuChoice);
 		switch(menuChoice) {
