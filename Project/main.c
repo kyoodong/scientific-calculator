@@ -9,7 +9,7 @@
 int date[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // 스택 데이터 개수
-int count;
+int mCount;
 
 // 스케줄 저장 배열
 int mScheduleYear[SCHEDULE_MAX_LENGTH] = {0};
@@ -21,9 +21,9 @@ char mSchedule[SCHEDULE_MAX_LENGTH][20] = {'\0'};
 int mScheduleCount = 0;
 
 // 스택 함수
-void push(char*, char);
-void pushStr(char*, char*);
-char pop(char*);
+void push(char*, char, int);
+void pushStr(char*, char*, int);
+char pop(char*, int);
 int isEmpty(char*);
 
 // 메뉴 함수
@@ -36,7 +36,7 @@ int getValue(char*);
 int getLength(char*);
 int isOperation(char*);
 void transformation(char *str, char *variable, int *value);
-void replaceInt(char *str, int index, int value);
+int replaceInt(char*, int, char*, int*);
 
 // 스케줄관리 함수
 int checkDate(int, int, int);
@@ -499,36 +499,105 @@ void calculator() {
  */
 void transformation(char *str, char *variable, int *value) {
     int index = 0;
-    while (*str != '\0') {
-        if (*str >= 'A' && *str <= 'Z') {
-            replaceInt(str, index, value[index]);
+    while (*(str + index) != '\0') {
+        if (*(str + index) >= 'A' && *(str + index) <= 'Z') {
+            index += replaceInt(str, index, variable, value) - 1;
             printf("Transformation : %s\n", str);
         }
-        str++;
         index++;
     }
 }
 
 
-void replaceInt(char *str, int index, int value) {
-    char valueStack[100];
-    char valueStr[100];
-    int a = 1;
-    while (value / a) {
-        int num = value % (a * 10);
-        push(valueStack, num / a);
-        printf("num = %d\n", num / a);
-        
-        a *= 10;
+char convertToChar(int num) {
+    char c;
+    switch (num) {
+        case 0:
+            c = '0';
+            break;
+            
+        case 1:
+            c = '1';
+            break;
+            
+        case 2:
+            c = '2';
+            break;
+            
+        case 3:
+            c = '3';
+            break;
+            
+        case 4:
+            c = '4';
+            break;
+            
+        case 5:
+            c = '5';
+            break;
+            
+        case 6:
+            c = '6';
+            break;
+            
+        case 7:
+            c = '7';
+            break;
+            
+        case 8:
+            c = '8';
+            break;
+            
+        default:
+            c = '9';
+            break;
+    }
+    return c;
+}
+
+
+int convertToString(char *str, int num) {
+    int a = 1000000000, index = 0, state = 0;
+    while (a) {
+        int b = num / a;
+        if (b || state) {
+            state = 1;
+            *(str + index++) = convertToChar(b);
+            num %= a;
+        }
+        a /= 10;
+    }
+    return a;
+}
+
+
+/*
+ * 변수를 숫자로 대체하는 함수
+ */
+int replaceInt(char *str, int index, char* variable, int* value) {
+    char valueStr[100] = {'\0'};
+    char var = *(str + index);
+    int valueIndex;
+    for (valueIndex = 0; *variable != var; valueIndex++)
+        variable++;
+//    printf("valueIndex = %d\n", valueIndex);
+//    printf("variable = %c\n", *(variable + valueIndex));
+//    printf("value = %d\n", *(value + valueIndex));
+    convertToString(valueStr, *(value + valueIndex));
+    
+//    printf("index = %d\n", index);
+    
+    int length = getLength(valueStr);
+//    printf("length = %d\n", length);
+    
+    for (int i = getLength(str); i > index; i--) {
+        *(str + i + length - 1) = *(str + i);
     }
     
-    while (!isEmpty(valueStack)) {
-        int index = 0;
-        char c =  pop(valueStack);
-        printf("%c\n", c);
-        valueStr[index++] = pop(valueStack);
+    for (int i = 0; i < length; i++) {
+        *(str + index++) = *(valueStr + i);
     }
-    printf("valueStr = %s\n", valueStr);
+    return length;
 }
 
 
@@ -584,18 +653,17 @@ char getVariable(char *str) {
  * Output : 10
  */
 int getValue(char *str) {
-    char stack[100];
-    
+    char stack[100] = {'\0'};
+    int stackCount = 0;
     int result = 0;
     int count = 1;
     while(*str < '0' || *str > '9')
         str++;
     while(*str >= '0' && *str <= '9') {
-        push(stack, *str++);
+        push(stack, *str++, stackCount++);
     }
     while(!isEmpty(stack)) {
-        char c = pop(stack);
-//        printf("%c\n", c);
+        char c = pop(stack, --stackCount);
         switch(c) {
             case '1':
                 result += 1 * count;
@@ -641,13 +709,13 @@ int getValue(char *str) {
 
 
 // 스택에 문자 하나 추가
-void push(char* stack, char chr) {
-    stack[count++] = chr;
+void push(char* stack, char chr, int count) {
+    stack[count] = chr;
 }
 
 
 // 스택에 문자열 추가
-void pushStr(char* stack, char *str) {
+void pushStr(char* stack, char *str, int count) {
     while(*str != '\0') {
         stack[count++] = *str++;
     }
@@ -655,14 +723,16 @@ void pushStr(char* stack, char *str) {
 
 
 // 스택에 있는 문자 하나 출력
-char pop(char* stack) {
-    return stack[--count];
+char pop(char* stack, int length) {
+    char c = stack[length];
+    stack[length] = '\0';
+    return c;
 }
 
 
 // 스택이 비었는지 확인
 int isEmpty(char *stack) {
-    if (count == 0)
+    if (*stack == '\0')
         return 1;
     return 0;
 }
