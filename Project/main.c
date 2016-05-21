@@ -36,6 +36,7 @@ int getValue(char*);
 int getLength(char*);
 int isOperation(char*);
 void transformation(char *str, char *variable, int *value);
+void replaceInt(char *str, int index, int value);
 
 // 스케줄관리 함수
 int checkDate(int, int, int);
@@ -515,14 +516,14 @@ void replaceInt(char *str, int index, int value) {
     while (value / a) {
         a *= 10;
         int num = value % a;
-        push(valueStr, );
+//        push(valueStr, );
     }
 }
 
 
-char convertIntTochar(int ) {
-    
-}
+//char convertIntTochar(int ) {
+
+//}
 
 
 
