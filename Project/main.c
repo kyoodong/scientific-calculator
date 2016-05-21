@@ -85,6 +85,10 @@ int main(void) {
                     case 2:
                         deleteSchedule();
                         break;
+						
+					case 3:
+						scheduler();
+						break;
                 }
             }
             break;
@@ -165,7 +169,7 @@ void deleteSchedule() {
             mScheduleYear[j - 1] = mScheduleYear[j];
             mScheduleMonth[j - 1] = mScheduleMonth[j];
             mScheduleDay[j - 1] = mScheduleDay[j];
-            //mSchedule[j - 1] = "\0";
+            copyStr(mSchedule[j], mSchedule[j -1]);
             printf("mSchedule = %s\n", mSchedule[j - 1]);
         }
         printf("일정을 삭제하였습니다.\n");
@@ -266,10 +270,13 @@ int checkDay(int year, int month, int day) {
     return 0;
 }
 
+// 일정정렬하기
+int bubblesort(
 
 // 일정관리 앱
 void scheduler() {
-    // 현재 시간 달력 띄우기
+
+   /* // 현재 시간 달력 띄우기
     time_t nowTime = time(NULL);
     struct tm *t;
     t = localtime(&nowTime);
@@ -311,7 +318,7 @@ void scheduler() {
                 }
                 printf("다시 입력해주세요.\n");
             }
-        }
+        }*/
         // 캘린더 출력
         printCalendar(year, month, day);
         
