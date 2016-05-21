@@ -139,6 +139,7 @@ int isEqual(char* str1, char* str2) {
 void copyStr(char* fromStr, char* toStr) {
 	while(*fromStr != '\0')
 		*toStr++ = *fromStr++;
+	 	*toStr = 0;
 }
 
 // 스케줄 삭제
@@ -151,15 +152,11 @@ void deleteSchedule() {
 	getchar();
 	fgets(schedule, sizeof(schedule), stdin);
 	removeEnterInFgetsString(schedule);
+	printf("출력 : %d년 %d월 %d일 %s\n",year,month,day,schedule);
 
 	int i;
 	// 년 월 일 스케줄에 매칭되는 스케줄 index 찾기
 	for (i = 0; i < mScheduleCount; i++) {
-		printf("mYear = %d\n", mScheduleYear[i]);
-		printf("mMonth = %d\n", mScheduleMonth[i]);
-		printf("mDay = %d\n", mScheduleDay[i]);
-		printf("mSchedule = %s\n", mSchedule[i]);
-		printf("schedule = %s\n", schedule);
 		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day && isEqual(mSchedule[i], schedule))
 			break;
 	}
@@ -170,11 +167,16 @@ void deleteSchedule() {
 			mScheduleMonth[j - 1] = mScheduleMonth[j];
 			mScheduleDay[j - 1] = mScheduleDay[j];
 			copyStr(mSchedule[j], mSchedule[j -1]);
-			printf("mSchedule = %s\n", mSchedule[j - 1]);
 		}
+		printf("%d년 %d월 %d일의 일정이 있습니다.\n",year,month,day);
 		printf("일정을 삭제하였습니다.\n");
+		mScheduleCount--;
+		mScheduleYear[mScheduleCount] = 0;
 	} else
+	{
+		printf("%d년 %d월 %d일의 일정이 없습니다.\n",year,month,day);
 		printf("일치하는 일정이 없습니다.\n");
+	}
 	printf("아무키나 입력하세요.........");
 	getchar();
 }
@@ -287,12 +289,12 @@ void sort() {
 				mScheduleMonth[j] = mScheduleMonth[j+1];
 				mScheduleMonth[j+1] = temp;
 
-				temp = mScheduleMonth[j];
+				temp = mScheduleDay[j];
 				mScheduleDay[j] = mScheduleDay[j+1];
 				mScheduleDay[j+1] = temp;
 
 				copyStr(mSchedule[j], swap);
-				copyStr(mSchedule[j], mSchedule[j+1]);
+				copyStr(mSchedule[j+1], mSchedule[j]);
 				copyStr(swap, mSchedule[j+1]);
 
 
@@ -311,12 +313,12 @@ void sort() {
 					mScheduleMonth[j] = mScheduleMonth[j+1];
 					mScheduleMonth[j+1] = temp;
 
-					temp = mScheduleMonth[j];
+					temp = mScheduleDay[j];
 					mScheduleDay[j] = mScheduleDay[j+1];
 					mScheduleDay[j+1] = temp;
 
 					copyStr(mSchedule[j], swap);
-					copyStr(mSchedule[j], mSchedule[j+1]);
+					copyStr(mSchedule[j+1], mSchedule[j]);
 					copyStr(swap, mSchedule[j+1]);
 
 				}		
@@ -380,8 +382,8 @@ void printCalendar(int year, int month, int day) {
 		isLeap = 1;
 
 	// 캘린더 출력 (윤년의 2월이면 29일까지, 시작 요일 포함)
-	int weekCount = 0;
-	printf("일\t\t월\t\t화\t\t수\t\t목\t\t금\t\t토\n");
+	int weekCount = 1;
+	printf("Sun.\t\tMon.\t\tTues.\t\tWed\t\tThurs.\t\tFri.\t\tSat.\n");
 	for (int i = 1; i <= date[month - 1] + isLeap + skipDay; i++, weekCount++) {
 		// 시작 요일 맞추기 위해 건너뜀
 		if (i <= skipDay)
@@ -400,7 +402,7 @@ void printCalendar(int year, int month, int day) {
 				// 해당 날짜에 일정 있는지 검사
 				for (int j = 0; j < mScheduleCount; j++) {
 					// 일정 있으면 출력
-					if (mScheduleYear[j] == year && mScheduleMonth[j] == month && mScheduleDay[j] == k) {
+					if (mScheduleYear[j] == year && mScheduleMonth[j] == month && mScheduleDay[j] == k - skipDay) {
 						printf("%s", mSchedule[j]);
 						break;
 					}
