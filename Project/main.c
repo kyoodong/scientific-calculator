@@ -511,13 +511,24 @@ void transformation(char *str, char *variable, int *value) {
 
 
 void replaceInt(char *str, int index, int value) {
+    char valueStack[100];
     char valueStr[100];
     int a = 1;
     while (value / a) {
+        int num = value % (a * 10);
+        push(valueStack, num / a);
+        printf("num = %d\n", num / a);
+        
         a *= 10;
-        int num = value % a;
-//        push(valueStr, );
     }
+    
+    while (!isEmpty(valueStack)) {
+        int index = 0;
+        char c =  pop(valueStack);
+        printf("%c\n", c);
+        valueStr[index++] = pop(valueStack);
+    }
+    printf("valueStr = %s\n", valueStr);
 }
 
 
