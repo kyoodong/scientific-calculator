@@ -485,10 +485,16 @@ void calculator() {
         // 연산식이면
         else {
             transformation(str, variable, value);
+//            posifixNotaion();
             break;
         }
     }
 }
+
+
+//void posifixNotaion() {
+//    
+//}
 
 
 /*
@@ -503,9 +509,115 @@ void transformation(char *str, char *variable, int *value) {
         if (*(str + index) >= 'A' && *(str + index) <= 'Z') {
             index += replaceInt(str, index, variable, value) - 1;
             printf("Transformation : %s\n", str);
+        } else {
+            int functionIndex = checkFunction((str + index));
+            if (functionIndex != 0) {
+                replaceFunction(str, functionIndex, index);
+                printf("Transformation : %s\n", str);
+            }
         }
         index++;
     }
+}
+
+
+int replaceFunction(char *str, int functionIndex, int index) {
+    int value, valueIndex;
+    switch (functionIndex) {
+        case 1:
+            // log
+            valueIndex = index + 3;
+            value = getFunctionValue(str + valueIndex);
+            printf("value = %d\n", value);
+            break;
+            
+        default:
+            return 0;
+            break;
+    }
+    return 0;
+}
+
+int getFunctionValue(char* str) {
+    char stack[10] = {'\0'};
+    int stackCount = 0;
+    int count = 1;
+    int result = 0;
+    while (*str == ' ') {
+        str++;
+    }
+    while (*str >= '0' && *str <= '9') {
+        push(stack, *str++, stackCount++);
+    }
+    while(!isEmpty(stack)) {
+        char c = pop(stack, --stackCount);
+        switch(c) {
+            case '1':
+                result += 1 * count;
+                break;
+                
+            case '2':
+                result += 2 * count;
+                break;
+                
+            case '3':
+                result += 3 * count;
+                break;
+                
+            case '4':
+                result += 4 * count;
+                break;
+                
+            case '5':
+                result += 5 * count;
+                break;
+                
+            case '6':
+                result += 6 * count;
+                break;
+                
+            case '7':
+                result += 7 * count;
+                break;
+                
+            case '8':
+                result += 8 * count;
+                break;
+                
+            case '9':
+                result += 9 * count;
+                break;
+                
+        }
+        count *= 10;
+    }
+    return result;
+}
+
+
+int checkFunction(char *str) {
+    if (isStartWith(str, "log"))
+        return 1;
+    else if (isStartWith(str, "pow"))
+        return 2;
+    else if (isStartWith(str, "sqrt"))
+        return 3;
+    else if (isStartWith(str, "sin"))
+        return 4;
+    else if (isStartWith(str, "cos"))
+        return 5;
+    else if (isStartWith(str, "tan"))
+        return 6;
+    return 0;
+}
+
+
+int isStartWith(char* allStr, char* startStr) {
+    while (*startStr != '\0') {
+        if (*allStr++ != *startStr++)
+            return 0;
+    }
+    return 1;
 }
 
 
