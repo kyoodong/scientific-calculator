@@ -13,9 +13,9 @@ int count;
 
 // 스케줄 저장 배열
 int mScheduleYear[SCHEDULE_MAX_LENGTH] = {0};
-int mScheduleMonth[100] = {0};
-int mScheduleDay[100] = {0};
-char mSchedule[100][20] = {'\0'};
+int mScheduleMonth[SCHEDULE_MAX_LENGTH] = {0};
+int mScheduleDay[SCHEDULE_MAX_LENGTH] = {0};
+char mSchedule[SCHEDULE_MAX_LENGTH][20] = {'\0'};
 
 // 스케줄 갯수
 int mScheduleCount = 0;
