@@ -12,7 +12,7 @@ int date[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 int count;
 
 // 스케줄 저장 배열
-int mScheduleYear[100] = {0};
+int mScheduleYear[SCHEDULE_MAX_LENGTH] = {0};
 int mScheduleMonth[100] = {0};
 int mScheduleDay[100] = {0};
 char mSchedule[100][20] = {'\0'};
