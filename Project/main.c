@@ -48,6 +48,7 @@ void printCalendar(int, int, int);
 int isLeapYear(int);
 void insertSchedule(int);
 void deleteSchedule();
+void sort();
 
 // String 함수
 char* removeEnterInFgetsString(char*);
@@ -86,9 +87,9 @@ int main(void) {
 						deleteSchedule();
 						break;
 
-					/*case 3:
+					case 3:
 						scheduler();
-						break;*/
+						break;
 				}
 			}
 			break;
@@ -235,6 +236,7 @@ void insertSchedule(int scheduleCount) {
 	printf("아무키나 입력하세요.......");
 	getchar();
 	system("clear");
+	sort();
 }
 
 int checkDate(int year, int month, int day) {
@@ -269,7 +271,7 @@ int checkDay(int year, int month, int day) {
 	return 0;
 }
 
-// 일정정렬하기
+// 일정 정렬하기
 void sort() {
 	int i, j, temp;
 	char swap[20];
@@ -340,7 +342,7 @@ void scheduler() {
 		month = mScheduleMonth[i];
 		day = mScheduleDay[i];
 		
-		printf("%d년 %d월 %d일\n\n", year, month, day);
+		printf("\t\t\t\t\t\t %d년 %d월\n\n", year, month);
 
 		// 캘린더 출력
 		printCalendar(year, month, day);
