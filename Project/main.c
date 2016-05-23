@@ -528,7 +528,7 @@ void transformation(char *str, char *variable, int *value) {
 
 int replaceMathFunction(char *str, int functionIndex, int index) {
     double value;
-    int valueIndex, temp, valueLength, functionLength, strLength;
+    int valueIndex, temp, valueLength, functionLength, strLength, tempLength = 0, tempLength2 = 0;
     char valueStr[10] = {'\0'};
     switch (functionIndex) {
         case 1:
@@ -550,30 +550,26 @@ int replaceMathFunction(char *str, int functionIndex, int index) {
             
         case 2:
             // pow
-            functionLength = -1;
+            functionLength = 1;
             valueIndex = index - 1;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
+            value = getFunctionValue(str + valueIndex, functionIndex, &tempLength);
+            functionLength += tempLength;
             valueIndex = index + 1;
-            temp = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            printf("value = %f\n", value);
-            printf("temp = %d\n", temp);
-            value = pow(value, temp);
-            printf("value = %f\n", value);
-            
-            functionLength = -1;
-            valueIndex = index + -1;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            valueIndex = index + 1;
-            temp = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
+            temp = getFunctionValue(str + valueIndex, functionIndex + 1, &tempLength2);
+            functionLength += tempLength2;
+            printf("functionLength = %d\n", functionLength);
             value = pow(value, temp);
             convertToString(valueStr, value);
             valueLength = getLength(valueStr);
+            
             strLength = getLength(str);
-            for (int i = 0; i < strLength - index - valueLength; i++) {
-                if (i < valueLength)
-                    str[index + i] = valueStr[i];
+            for (int i = 0; i < strLength - index + 1; i++) {
+                if (i < valueLength) {
+                    str[index + i - tempLength2] = valueStr[i];
+                }
+                
                 else
-                    str[index + i] = *(str + index + i + functionLength - valueLength);
+                    str[index + i - tempLength2] = *(str + index + i + functionLength - valueLength - tempLength);
             }
             break;
             
