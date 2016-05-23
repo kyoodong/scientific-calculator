@@ -37,6 +37,10 @@ int getLength(char*);
 int isOperation(char*);
 void transformation(char *str, char *variable, int *value);
 int replaceInt(char*, int, char*, int*);
+int replaceMathFunction(char*, int, int);
+int getFunctionValue(char*);
+int checkFunction(char*);
+int isStartWith(char*, char*);
 
 // 스케줄관리 함수
 int checkDate(int, int, int);
@@ -512,7 +516,7 @@ void transformation(char *str, char *variable, int *value) {
         } else {
             int functionIndex = checkFunction((str + index));
             if (functionIndex != 0) {
-                replaceFunction(str, functionIndex, index);
+                replaceMathFunction(str, functionIndex, index);
                 printf("Transformation : %s\n", str);
             }
         }
@@ -521,21 +525,53 @@ void transformation(char *str, char *variable, int *value) {
 }
 
 
-int replaceFunction(char *str, int functionIndex, int index) {
-    int value, valueIndex;
+int replaceMathFunction(char *str, int functionIndex, int index) {
+    int value, valueIndex, temp;
     switch (functionIndex) {
         case 1:
             // log
             valueIndex = index + 3;
             value = getFunctionValue(str + valueIndex);
-            printf("value = %d\n", value);
+            value = log10(value);
+            break;
+            
+        case 2:
+            // pow
+            valueIndex = index + 3;
+            value = getFunctionValue(str + valueIndex);
+            value = pow(5, 3);
+            break;
+            
+        case 3:
+            // sqrt
+            valueIndex = index + 4;
+            value = getFunctionValue(str + valueIndex);
+            value = sqrt(value);
+            break;
+            
+        case 4:
+            // sin
+            valueIndex = index + 3;
+            value = getFunctionValue(str + valueIndex);
+            valueIndex = index + 3;
+            value = sin(value);
+            break;
+            
+        case 5:
+            // cos
+            valueIndex = index + 3;
+            value = getFunctionValue(str + valueIndex);
+            value = cos(value);
             break;
             
         default:
-            return 0;
+            // tan
+            valueIndex = index + 3;
+            value = getFunctionValue(str + valueIndex);
+            value = tan(value);
             break;
     }
-    return 0;
+    return value;
 }
 
 int getFunctionValue(char* str) {
@@ -668,19 +704,18 @@ char convertToChar(int num) {
 }
 
 
-int convertToString(char *str, int num) {
-    int a = 1000000000, index = 0, state = 0;
-    while (a) {
-        int b = num / a;
-        if (b || state) {
-            state = 1;
-            *(str + index++) = convertToChar(b);
-            num %= a;
-        }
-        a /= 10;
+void convertToString(char *str, int num) {
+    static int index = 0;
+    if (num < 10) {
+        *(str + index++) = convertToChar(num);
+        printf("num1 = %d\n", num);
+        return;
     }
-    return a;
+    convertToString(str, num / 10);
+    printf("num2 = %d\n", num % 10);
+    *(str + index++) = convertToChar(num % 10);
 }
+
 
 
 /*
