@@ -42,6 +42,9 @@ int getFunctionValue(char*, int, int*);
 int checkFunction(char*);
 int isStartWith(char*, char*);
 int convertToString(char*, int);
+void posifixNotaion();
+int isOperator(char);
+int checkOperatorLevel(char, char);
 
 // 스케줄관리 함수
 int checkDate(int, int, int);
@@ -464,18 +467,15 @@ void calculator() {
     int value[10];
     
     int variableCount = 0;
-    
-    // 연산자 임시 저장
-    char operator;
-    
     getchar();
     
     // 변수 지정
     while(1) {
+        // 변수나 수식 입력
         printf("Input : ");
         fgets(str, sizeof(str), stdin);
-        removeEnterInFgetsString(str);
-        if (getLength(str) == 0)
+        removeEnterInFgetsString(str);      // fgets의 마지막 \n 제거
+        if (getLength(str) == 0)            // 아무것도 입력안하면 다시 입력
             break;
     
         // 변수식이면
@@ -489,17 +489,155 @@ void calculator() {
         
         // 연산식이면
         else {
-            transformation(str, variable, value);
-//            posifixNotaion();
+            transformation(str, variable, value);           // 변수나 수학 함수를 수로 변환
+            posifixNotaion(str, getLength(str));           // 후위 표기법으로 변환
             break;
         }
     }
 }
 
 
-//void posifixNotaion() {
-//    
-//}
+/*
+ * 후위 표기법으로 변환
+ * @prarms
+ *      str = 수식
+ *      length = 길이
+ */
+void posifixNotaion(char* str, int length) {
+    char result[100] = {'\0'};
+    int resultCount = 0;
+    
+    char stack[100] = {'\0'};
+    int count = 0;
+    char temp;
+    for (int i = 0; i < length; i++) {
+        if (*(str + i) == ' ') {
+            continue;
+        }
+        switch (*(str + i)) {
+            case '(':
+                push(stack, *(str + i), count++);
+                break;
+                
+            case ')':
+                // (가 나올 때까지 팝하고 ( 는 팝하여 버린다.
+                while (!isEmpty(stack) && ((temp = pop(stack, --count)) != '(')) {
+                    result[resultCount++] = temp;
+                }
+                printf("%s\n", result);
+                break;
+                
+            case '+':
+            case '-':
+                while (!isEmpty(stack)) {
+                    temp = pop(stack, --count);
+                    if (isOperator(temp)) {
+                        result[resultCount++] = temp;
+                    } else {
+                        push(stack, temp, count++);
+                        break;
+                    }
+                }
+                push(stack, *(str + i), count++);
+                printf("%s\n", result);
+                break;
+                
+            case '*':
+            case '/':
+                while (!isEmpty(stack)) {
+                    temp = pop(stack, --count);
+                    // 우선순위가 같다면
+                    if (checkOperatorLevel(temp, *(str + i)) == 1) {
+                        result[resultCount++] = temp;
+                    } else {
+                        push(stack, temp, count++);
+                        break;
+                    }
+                }
+                push(stack, *(str + i), count++);
+                printf("%s\n", result);
+                break;
+                
+            default:
+                result[resultCount++] = *(str + i);
+                printf("%s\n", result);
+                break;
+        }
+    }
+    while (!isEmpty(stack)) {
+        char c = pop(stack, --count);
+        result[resultCount++] = c;
+        
+        printf("%s\n", result);
+    }
+    
+    int numStack[100] = {0};
+    int numStackCount = 0;
+    
+    // 계산
+    for (int i = 0; *(str + i) != '\0'; i++) {
+        if (isOperator(*(str + i))) {
+            int num1 = pop(numStack, --numStackCount);
+            int num2 = pop(numStack, --numStackCount);
+        } else {
+            push(numStack, *(str + i), count++);
+        }
+    }
+}
+
+
+/*
+ * 연산자인지 판별
+ * @param : c - 비교할 문자
+ * @return : 1 - 연산자
+ *           0 - 연산자 아닌 것
+ */
+int isOperator(char c) {
+    if (c == '+' || c == '-' || c == '*' || c == '/')
+        return 1;
+    return 0;
+}
+
+
+/*
+ * 연산자 우선순위 비교
+ * @param :
+        operator1, operator2 = 비교할 연산자들
+ * @return :
+        0 = operator1이 더 낮음
+        1 = 같음
+        2 = operator1이 더 높음
+ */
+int checkOperatorLevel(char operator1, char operator2) {
+    switch (operator1) {
+        case '+':
+        case '-':
+            switch (operator2) {
+                case '+':
+                case '-':
+                    return 1;
+                    
+                case '*':
+                case '/':
+                    return 0;
+            }
+            break;
+            
+        case '*':
+        case '/':
+            switch (operator2) {
+                case '+':
+                case '-':
+                    return 2;
+                    
+                case '*':
+                case '/':
+                    return 1;
+            }
+            break;
+    }
+    return 0;
+}
 
 
 /*
@@ -564,10 +702,8 @@ int replaceMathFunction(char *str, int functionIndex, int index) {
             
             strLength = getLength(str);
             for (int i = 0; i < strLength - index + 1; i++) {
-                if (i < valueLength) {
+                if (i < valueLength)
                     str[index + i - tempLength2] = valueStr[i];
-                }
-                
                 else
                     str[index + i - tempLength2] = *(str + index + i + functionLength - valueLength - tempLength);
             }
@@ -843,6 +979,53 @@ char convertToChar(int num) {
             break;
     }
     return c;
+}
+
+
+char convertToInt(char num) {
+    int result;
+    switch (num) {
+        case '0':
+            result = 0;
+            break;
+            
+        case '1':
+            result = 1;
+            break;
+            
+        case '2':
+            result = 2;
+            break;
+            
+        case '3':
+            result = 3;
+            break;
+            
+        case '4':
+            result = 4;
+            break;
+            
+        case '5':
+            result = 5;
+            break;
+            
+        case '6':
+            result = 6;
+            break;
+            
+        case '7':
+            result = 7;
+            break;
+            
+        case '8':
+            result = 8;
+            break;
+            
+        default:
+            result = 9;
+            break;
+    }
+    return result;
 }
 
 
