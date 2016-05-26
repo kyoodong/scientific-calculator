@@ -701,3 +701,6 @@ int isEmpty(char *stack) {
 		return 1;
 	return 0;
 }
+
+
+
