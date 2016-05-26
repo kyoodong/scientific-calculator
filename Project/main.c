@@ -77,7 +77,7 @@ int main(void) {
 
 			case 2:
 				while (1) {
-					// 스케쥴러
+					// 스케줄러
 					subMenu = schedulerMenu();
 					switch(subMenu) {
 						case 1:
@@ -194,6 +194,7 @@ void deleteSchedule() {
 
 // 스케줄 입력
 void insertSchedule(int scheduleCount) {
+	int i;
 	int year, month, day;
 	char schedule[100];
 	while (1) {
@@ -211,43 +212,58 @@ void insertSchedule(int scheduleCount) {
 	printf("출력 : %d년 %d월 %d일 %s\n", year, month, day, schedule);
 
 	// 일정 겹치는지 확인
-	int overwrite = 1;
-	for (int i = 0; i < scheduleCount; i++) {
+	int overwrite = 0;
+	for (i = 0; i < scheduleCount; i++) {
 		// 겹침
 		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day) {
+			overwrite = 1 ;
 			char answer;
-			printf("해당 날짜에 이미 일정이 있습니다. 덮어 씌우시겠습니까? (Y or N)");
+			printf("해당 날짜에 이미 일정이 있습니다. 일정을 추가하려면Yes, 덮어쓰려면 No를 입력하세요(Y or N)");
 			answer = getchar();
 			getchar();
-			// 덮어씌우기
+			// 추가
 			if (answer == 'Y' || answer == 'y') {
-				scheduleCount = i;
-				overwrite = 1;
+				break ;
 			}
-			// 되돌아가기
+			// x되돌아가기 덮어쓰기
 			else
-				overwrite = 0;
-			break;
+			{
+				overwrite = 1;
+				scheduleCount = i;
+				break;
+			}
+			//overwrite = 0 ;
+			//break;
 		}
 	}
 
 	// 덮어쓰지 않겠다면 처음으로 돌아감
-	if (!overwrite)
-		return;
+	//if (!overwrite)
+	//	scheduleCount++;	
 
 	mScheduleYear[scheduleCount] = year;
 	mScheduleMonth[scheduleCount] = month;
 	mScheduleDay[scheduleCount] = day;
 	copyStr(schedule, mSchedule[scheduleCount]);
-
-	if (mScheduleCount == scheduleCount)
+	if (overwrite == 0) { // Yes를 입력했을때or 일정이 없어서 추가
+		scheduleCount++;
 		mScheduleCount++;
-
-	printf("일정을 추가하였습니다.\n");
-	printf("아무키나 입력하세요.......");
+		printf("%d %d\n",scheduleCount,mScheduleCount);
+		printf("일정을 추가하였습니다.\n");
+		printf("아무키나 입력하세요.......");
+	}
+	
+//	if (!overwrite)
+//		mScheduleCount++;
+	//if (mScheduleCount == scheduleCount)
+	//	mScheduleCount++;
+	else { // No를 입력했을때
+		printf("일정을 덮어썼습니다.\n");
+		printf("아무키나 입력하세요.......");
+	}
 	getchar();
 	system("clear");
-	sort();
+	//sort();
 }
 
 int checkDate(int year, int month, int day) {
@@ -342,8 +358,10 @@ void sort() {
 // 스케줄 보기
 void scheduler() {
 
+	//printf("%d",mScheduleCount);
 	int i, year, day, month;
 	getchar();
+	printf("%d\n",mScheduleCount);
 	for(i=0; i < mScheduleCount; i++)
 	{
 
@@ -377,9 +395,10 @@ void scheduler() {
  */
 void printCalendar(int year, int month, int day) {
 	// 1년1월1일로부터 해당 년월일까지 총 일 수 계산
+	int i, j, k;
 	int leapYear = getLeapYear(year, month);
 	int allDay = year * 365 + leapYear;
-	for (int i = 0; i < month - 1; i++)
+	for (i = 0; i < month - 1; i++)
 		allDay += date[i];
 
 	// 캘린더 출력 시 시작 요일 계산
@@ -393,7 +412,7 @@ void printCalendar(int year, int month, int day) {
 	// 캘린더 출력 (윤년의 2월이면 29일까지, 시작 요일 포함)
 	int weekCount = 1;
 	printf("Sun.\t\tMon.\t\tTues.\t\tWed\t\tThurs.\t\tFri.\t\tSat.\n");
-	for (int i = 1; i <= date[month - 1] + isLeap + skipDay; i++, weekCount++) {
+	for (i = 1; i <= date[month - 1] + isLeap + skipDay; i++, weekCount++) {
 		// 시작 요일 맞추기 위해 건너뜀
 		if (i <= skipDay)
 			printf("\t\t");
@@ -406,13 +425,22 @@ void printCalendar(int year, int month, int day) {
 		if (i % 7 == 0 || i == date[month - 1] + isLeap + skipDay) {
 			printf("\n");
 			// 날짜 밑에 일정 출력
-			for (int k = i - weekCount + 1; k <= i; k++) {
+			for (k = i - weekCount + 1; k <= i; k++) {
 				weekCount = 0;
 				// 해당 날짜에 일정 있는지 검사
-				for (int j = 0; j < mScheduleCount; j++) {
+				for (j = 0; j < mScheduleCount; j++) {
 					// 일정 있으면 출력
 					if (mScheduleYear[j] == year && mScheduleMonth[j] == month && mScheduleDay[j] == k - skipDay) {
-						printf("%s", mSchedule[j]);
+						int len = getLength(mSchedule[j]);
+						char str[100];
+						copyStr(mSchedule[j],str);
+						if(len >= 12) {
+							str[12] = 0;
+							printf("%s...", str);
+						}
+						else {
+							printf("%s", mSchedule[j]);
+						}
 						break;
 					}
 				}
@@ -440,12 +468,13 @@ int isLeapYear(int year) {
 
 // 윤년 몇 번 지나왔는지 계산
 int getLeapYear(int year, int month) {
+	int i;
 	int leapYear = 0;
 	int includeYear = 0;
 	// 2월 지났으면 해당 년도도 포함해서 계산
 	if (month > 2)
 		includeYear = 1;
-	for (int i = 1; i < year + includeYear; i++) {
+	for (i = 1; i < year + includeYear; i++) {
 		if (isLeapYear(i))
 			leapYear++;
 	}
