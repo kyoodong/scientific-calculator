@@ -24,6 +24,8 @@ int mScheduleCount = 0;
 void push(char*, char, int);
 void pushStr(char*, char*, int);
 char pop(char*, int);
+double popDouble(double*, int);
+void pushDouble(double*, double, int);
 int isEmpty(char*);
 
 // 메뉴 함수
@@ -43,8 +45,10 @@ int checkFunction(char*);
 int isStartWith(char*, char*);
 int convertToString(char*, int);
 void posifixNotaion();
-int isOperator(char);
+int checkOperator(char);
 int checkOperatorLevel(char, char);
+char convertToInt(char);
+void printDoubleArray(double[], int);
 
 // 스케줄관리 함수
 int checkDate(int, int, int);
@@ -531,7 +535,7 @@ void posifixNotaion(char* str, int length) {
             case '-':
                 while (!isEmpty(stack)) {
                     temp = pop(stack, --count);
-                    if (isOperator(temp)) {
+                    if (checkOperator(temp)) {
                         result[resultCount++] = temp;
                     } else {
                         push(stack, temp, count++);
@@ -571,31 +575,88 @@ void posifixNotaion(char* str, int length) {
         printf("%s\n", result);
     }
     
-    int numStack[100] = {0};
-    int numStackCount = 0;
+    double numStack[100] = {0};
+    double numStackCount = 0;
     
     // 계산
-    for (int i = 0; *(str + i) != '\0'; i++) {
-        if (isOperator(*(str + i))) {
-            int num1 = pop(numStack, --numStackCount);
-            int num2 = pop(numStack, --numStackCount);
+    for (int i = 0; *(result + i) != '\0'; i++) {
+        if (*(result + i) == ' ') {
+            continue;
+        }
+        int operator;
+        if ((operator = checkOperator(*(result + i)))) {
+            double num1 = popDouble(numStack, --numStackCount);
+            double num2 = popDouble(numStack, --numStackCount);
+            
+            switch (operator) {
+                case 1:
+                    // 덧셈
+                    pushDouble(numStack, num2 + num1, numStackCount++);
+                    break;
+                    
+                case 2:
+                    // 뺄셈
+                    pushDouble(numStack, num2 - num1, numStackCount++);
+                    break;
+                    
+                case 3:
+                    // 곱셈
+                    pushDouble(numStack, num2 * num1, numStackCount++);
+                    break;
+                    
+                case 4:
+                    // 나눗셈
+                    pushDouble(numStack, num2 / num1, numStackCount++);
+                    break;
+            }
+            printDoubleArray(numStack, numStackCount);
+            printf("%s\n", result + i + 1);
         } else {
-            push(numStack, *(str + i), count++);
+            pushDouble(numStack, convertToInt(*(result + i)), numStackCount++);
         }
     }
+    printf("\n");
+}
+
+
+void printDoubleArray(double array[], int size) {
+    for (int i = 0; i < size; i++)
+        printf("%f ", array[i]);
 }
 
 
 /*
  * 연산자인지 판별
  * @param : c - 비교할 문자
- * @return : 1 - 연산자
- *           0 - 연산자 아닌 것
+ * @return : 
+ *      1 - 덧셈
+ *      2 - 뺄셈
+ *      3 - 곱셈
+ *      4 - 나눗셈
+ *      0 - 연산자 아닌 것
  */
-int isOperator(char c) {
-    if (c == '+' || c == '-' || c == '*' || c == '/')
-        return 1;
-    return 0;
+int checkOperator(char c) {
+    switch (c) {
+        case '+':
+            return 1;
+            break;
+            
+        case '-':
+            return 2;
+            break;
+            
+        case '*':
+            return 3;
+            break;
+            
+        case '/':
+            return 4;
+            break;
+            
+        default:
+            return 0;
+            break;
+    }
 }
 
 
@@ -1184,6 +1245,12 @@ void push(char* stack, char chr, int count) {
 }
 
 
+// 스택에 수 하나 추가
+void pushDouble(double* stack, double chr, int count) {
+    stack[count] = chr;
+}
+
+
 // 스택에 문자열 추가
 void pushStr(char* stack, char *str, int count) {
     while(*str != '\0') {
@@ -1196,6 +1263,14 @@ void pushStr(char* stack, char *str, int count) {
 char pop(char* stack, int length) {
     char c = stack[length];
     stack[length] = '\0';
+    return c;
+}
+
+
+// 스택에 있는 숫자 하나 출력
+double popDouble(double* stack, int length) {
+    double c = stack[length];
+    stack[length] = 0;
     return c;
 }
 
