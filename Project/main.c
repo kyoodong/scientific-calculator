@@ -39,8 +39,8 @@ int getLength(char*);
 int isOperation(char*);
 void transformation(char *str, char *variable, int *value);
 int replaceVariableToInt(char*, int, char*, int*);
-int replaceMathFunction(char*, int, int);
-int getFunctionValue(char*, int, int*);
+int replaceMathFunction(char*, int, int, char*, int*);
+int getFunctionValue(char*, int, int*, char*, int*, int);
 int checkFunction(char*);
 int isStartWith(char*, char*);
 int convertToString(char*, int);
@@ -459,7 +459,7 @@ int getLeapYear(int year, int month) {
 }
 
 
-// 계산기
+// 계산기  
 void calculator() {
     // 변수 지정 or 수학 식 임시 저장
     char str[100];
@@ -563,7 +563,11 @@ void posifixNotaion(char* str, int length) {
                 break;
                 
             default:
-                result[resultCount++] = *(str + i);
+                while (*(str + i) >= '0' && *(str + i) <= '9') {
+                    result[resultCount++] = *(str + i);
+                    i++;
+                }
+                result[resultCount++] = ' ';
                 printf("%s\n", result);
                 break;
         }
@@ -612,7 +616,26 @@ void posifixNotaion(char* str, int length) {
             printDoubleArray(numStack, numStackCount);
             printf("%s\n", result + i + 1);
         } else {
-            pushDouble(numStack, convertToInt(*(result + i)), numStackCount++);
+            char curStack[10] = {'\0'};
+            int curStackCount = 0;
+            
+            while (*(result + i) >= '0' && *(result + i) <= '9') {
+                push(curStack, *(result + i), curStackCount++);
+                i++;
+            }
+            i--;
+//            result[resultCount++] = ' ';
+            
+            printf("%s\n", result);
+            
+            int ab = 0, c = 1;
+            while (!isEmpty(curStack)) {
+                ab += convertToInt(pop(curStack, --curStackCount)) * c;
+                c *= 10;
+            }
+//            giprintf("ab = %d\n", ab);
+            
+            pushDouble(numStack, ab, numStackCount++);
         }
     }
     printf("\n");
@@ -716,7 +739,7 @@ void transformation(char *str, char *variable, int *value) {
         } else {
             int functionIndex = checkFunction((str + index));
             if (functionIndex != 0) {
-                replaceMathFunction(str, functionIndex, index);
+                replaceMathFunction(str, functionIndex, index, variable, value);
                 printf("Transformation : %s\n", str);
             }
         }
@@ -725,132 +748,107 @@ void transformation(char *str, char *variable, int *value) {
 }
 
 
-int replaceMathFunction(char *str, int functionIndex, int index) {
-    double value;
-    int valueIndex, temp, valueLength, functionLength, strLength, tempLength = 0, tempLength2 = 0;
-    char valueStr[10] = {'\0'};
-    switch (functionIndex) {
-        case 1:
-            // log
-            functionLength = 3;
-            valueIndex = index + 3;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            value = log10(value);
-            convertToString(valueStr, value);
-            valueLength = getLength(valueStr);
-            strLength = getLength(str);
-            for (int i = 0; i < strLength - index - valueLength; i++) {
-                if (i < valueLength)
-                    str[index + i] = valueStr[i];
-                else
-                    str[index + i] = *(str + index + i + functionLength - valueLength);
-            }
-            break;
-            
-        case 2:
-            // pow
-            functionLength = 1;
-            valueIndex = index - 1;
-            value = getFunctionValue(str + valueIndex, functionIndex, &tempLength);
-            functionLength += tempLength;
-            valueIndex = index + 1;
-            temp = getFunctionValue(str + valueIndex, functionIndex + 1, &tempLength2);
-            functionLength += tempLength2;
-            printf("functionLength = %d\n", functionLength);
-            value = pow(value, temp);
-            convertToString(valueStr, value);
-            valueLength = getLength(valueStr);
-            
-            strLength = getLength(str);
-            for (int i = 0; i < strLength - index + 1; i++) {
-                if (i < valueLength)
-                    str[index + i - tempLength2] = valueStr[i];
-                else
-                    str[index + i - tempLength2] = *(str + index + i + functionLength - valueLength - tempLength);
-            }
-            break;
-            
-        case 3:
-            // sqrt
-            functionLength = 4;
-            valueIndex = index + 4;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            value = sqrt(value);
-            convertToString(valueStr, value);
-            valueLength = getLength(valueStr);
-            strLength = getLength(str);
-            for (int i = 0; i < strLength - index - valueLength; i++) {
-                if (i < valueLength)
-                    str[index + i] = valueStr[i];
-                else
-                    str[index + i] = *(str + index + i + functionLength - valueLength);
-            }
-            break;
-            
-        case 4:
-            // sin
-            functionLength = 3;
-            valueIndex = index + 3;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            value = sin(value) * 100;
-            printf("%f\n", value);
-            convertToString(valueStr, value);
-            printf("%s\n", valueStr);
-            valueLength = getLength(valueStr);
-            strLength = getLength(str);
-            str[index] = '0';
-            str[index + 1] = '.';
-            for (int i = 0; i < strLength - index - valueLength; i++) {
-                if (i < valueLength)
-                    str[index + i + 2] = valueStr[i];
-                else
-                    str[index + i + 2] = *(str + index + i + 2 + functionLength - valueLength);
-            }
-            break;
-            
-        case 5:
-            // cos
-            functionLength = 3;
-            valueIndex = index + 3;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            value = cos(value);
-            convertToString(valueStr, value);
-            valueLength = getLength(valueStr);
-            strLength = getLength(str);
-            str[index] = '0';
-            str[index + 1] = '.';
-            for (int i = 0; i < strLength - index - valueLength; i++) {
-                if (i < valueLength)
-                    str[index + i + 2] = valueStr[i];
-                else
-                    str[index + i + 2] = *(str + index + i + 2 + functionLength - valueLength);
-            }
-            break;
-            
-        default:
-            // tan
-            functionLength = 3;
-            valueIndex = index + 3;
-            value = getFunctionValue(str + valueIndex, functionIndex, &functionLength);
-            value = tan(value);
-            convertToString(valueStr, value);
-            valueLength = getLength(valueStr);
-            strLength = getLength(str);
-            str[index] = '0';
-            str[index + 1] = '.';
-            for (int i = 0; i < strLength - index - valueLength; i++) {
-                if (i < valueLength)
-                    str[index + i + 2] = valueStr[i];
-                else
-                    str[index + i + 2] = *(str + index + i + 2 + functionLength - valueLength);
-            }
-            break;
+/*
+ * TODO : 수학함수 계산
+ * @params :
+ *      *str = 수식
+ *      functionIndex = 함수 구분 인덱스 1:log, 2:pow, 3:sqrt, 4:sin, 5:cos, 6:tan
+ *      index = 전체 문자열 중 수학 함수의 첫글자 인덱스 값
+ * @return : 결과값 길이
+ */
+int replaceMathFunction(char *str, int functionIndex, int index, char *variableArray, int *valueArray) {
+    char valueStr[10] = {'\0'};         // 결과 값 String
+    int functionLength, valueIndex, value, valueLength, strLength;
+    
+    if (functionIndex == 3) {       // sqrt
+        functionLength = 4;
+    } else if (functionIndex == 2) {    // pow(^)
+        functionLength = 1;
+    } else {
+        functionLength = 3;
+    }
+    
+    if (functionIndex == 2) {                   // pow
+        int tempLength = 0, tempLength2 = 0;
+        valueIndex = index - 1;
+        
+        // ^ 이전의 값
+        value = getFunctionValue(str + valueIndex, functionIndex, &tempLength, variableArray, valueArray,  functionLength);
+        functionLength += tempLength;
+        valueIndex = index + 1;
+        
+        // ^ 이후의 값
+        int temp = getFunctionValue(str + valueIndex, functionIndex + 1, &tempLength2, variableArray, valueArray, functionLength);
+        functionLength += tempLength2;
+        
+        // 결과 값
+        value = pow(value, temp);
+        
+        // 결과 값 String 변환 (value -> valueStr)
+        convertToString(valueStr, value);
+        valueLength = getLength(valueStr);
+        strLength = getLength(str);
+        
+        // 수학함수 + 수학함수 인자 <-> 결과 값
+        for (int i = 0; i < strLength - index + 1; i++) {
+            if (i < valueLength)
+                str[index + i - tempLength2] = valueStr[i];
+            else
+                str[index + i - tempLength2] = *(str + index + i + functionLength - valueLength - tempLength);
+        }
+    } else {                                    // not pow
+        valueIndex = index + functionLength;
+        value = getFunctionValue(str + valueIndex, functionIndex, &functionLength, variableArray, valueArray, functionLength);
+        
+        // 함수 별 계산
+        switch (functionIndex) {
+            case 1:
+                // 로그
+                value = log10(value);
+                break;
+                
+            case 3:
+                // 제곱근
+                value = sqrt(value);
+                break;
+                
+            case 4:
+                // 사인
+                value = sin(value);
+                break;
+                
+            case 5:
+                // 코사인
+                value = cos(value);
+                break;
+                
+            case 6:
+                // 탄젠트
+                value = tan(value);
+                break;
+                
+            default:
+                break;
+        }
+        
+        // 결과 값 String 변환 (value -> valueStr)
+        convertToString(valueStr, value);
+        valueLength = getLength(valueStr);
+        strLength = getLength(str);
+        
+        // 수학함수 + 수학함수 인자 <-> 결과 값
+        for (int i = 0; i < strLength - index - valueLength; i++) {
+            if (i < valueLength)
+                str[index + i] = valueStr[i];
+            else
+                str[index + i] = *(str + index + i + functionLength - valueLength);
+        }
     }
     
     return valueLength;
 }
 
-int getFunctionValue(char* str, int functionIndex, int *valueLength) {
+int getFunctionValue(char* str, int functionIndex, int *valueLength, char *variableArray, int *valueArray, int functionLength) {
     char stack[10] = {'\0'};
     int stackCount = 0;
     int count = 1;
@@ -919,6 +917,12 @@ int getFunctionValue(char* str, int functionIndex, int *valueLength) {
             (*valueLength)++;
             str++;
         }
+        
+        // 수학 함수 뒤에 변수 있으면 변환
+        if (*str >= 'A' && *str <= 'B') {
+            replaceVariableToInt(str, 0, variableArray, valueArray);
+        }
+        
         while (*str >= '0' && *str <= '9') {
             (*valueLength)++;
             push(stack, *str++, stackCount++);
@@ -975,7 +979,7 @@ int checkFunction(char *str) {
         return 1;
     else if (isStartWith(str, "^"))
         return 2;
-    else if (isStartWith(str, "sqrt"))
+    else if (isStartWith(str, "root"))
         return 3;
     else if (isStartWith(str, "sin"))
         return 4;
@@ -1091,6 +1095,20 @@ char convertToInt(char num) {
 
 
 /*
+ * 스택 순서 뒤집기
+ */
+void reverse(char* stack, int size) {
+    int i, j = size / 2;
+    char temp;
+    for (i = 0; i < j; i++) {
+        temp = stack[i];
+        stack[i] = stack[size - i];
+        stack[size - i] = temp;
+    }
+}
+
+
+/*
  * 숫자를 문자열로 바꾸는 함수
  */
 int convertToString(char *str, int num) {
@@ -1112,11 +1130,18 @@ int convertToString(char *str, int num) {
  */
 int replaceVariableToInt(char *str, int index, char* variable, int* value) {
     char valueStr[100] = {'\0'};
+    int valueStackIndex = 0;
     char var = *(str + index);
     int valueIndex;
     for (valueIndex = 0; *variable != var; valueIndex++)
         variable++;
-    convertToString(valueStr, *(value + valueIndex));
+    
+    int curValue = *(value + valueIndex);
+    while (curValue) {
+        push(valueStr, convertToChar(curValue % 10), valueStackIndex++);
+        curValue /= 10;
+    }
+    reverse(valueStr, valueStackIndex - 1);
     
     int length = getLength(valueStr);
     for (int i = getLength(str); i > index; i--) {
