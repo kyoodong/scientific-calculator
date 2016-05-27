@@ -1303,4 +1303,4 @@ int isEmpty(char *stack) {
     if (*stack == '\0')
         return 1;
     return 0;
-}
+} 
