@@ -459,7 +459,7 @@ int getLeapYear(int year, int month) {
 }
 
 
-// 계산기  
+// 계산기
 void calculator() {
     // 변수 지정 or 수학 식 임시 저장
     char str[100];
