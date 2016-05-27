@@ -292,6 +292,63 @@ int checkDay(int year, int month, int day) {
 		if (day > 0 && day <= 29)
 			return 1;
 	return 0;
+<<<<<<< HEAD
+=======
+}
+
+// 일정 정렬하기
+void sort() {
+	int i, j, temp;
+	char swap[20];
+	for(i=0; i < mScheduleCount; i++) {
+		for(j=0; j < mScheduleCount - i - 1; j++) {
+			if(mScheduleYear[j] > mScheduleYear[j+1])
+			{
+				temp = mScheduleYear[j];
+				mScheduleYear[j] = mScheduleYear[j+1];
+				mScheduleYear[j+1] = temp;
+
+				temp = mScheduleMonth[j];
+				mScheduleMonth[j] = mScheduleMonth[j+1];
+				mScheduleMonth[j+1] = temp;
+
+				temp = mScheduleDay[j];
+				mScheduleDay[j] = mScheduleDay[j+1];
+				mScheduleDay[j+1] = temp;
+
+				copyStr(mSchedule[j], swap);
+				copyStr(mSchedule[j+1], mSchedule[j]);
+				copyStr(swap, mSchedule[j+1]);
+
+
+			}
+
+			else if(mScheduleYear[j] == mScheduleYear[j+1])
+			{
+
+				if(mScheduleMonth[j] > mScheduleMonth[j+1])
+				{
+					temp = mScheduleYear[j];
+					mScheduleYear[j] = mScheduleYear[j+1];
+					mScheduleYear[j+1] = temp;
+
+					temp = mScheduleMonth[j];
+					mScheduleMonth[j] = mScheduleMonth[j+1];
+					mScheduleMonth[j+1] = temp;
+
+					temp = mScheduleDay[j];
+					mScheduleDay[j] = mScheduleDay[j+1];
+					mScheduleDay[j+1] = temp;
+
+					copyStr(mSchedule[j], swap);
+					copyStr(mSchedule[j+1], mSchedule[j]);
+					copyStr(swap, mSchedule[j+1]);
+
+				}		
+			}
+		}
+	}
+>>>>>>> master
 }
 
 // 일정 정렬하기
@@ -351,6 +408,10 @@ void sort() {
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 // 스케줄 보기
 void scheduler() {
 
@@ -467,6 +528,7 @@ int getLeapYear(int year, int month) {
 
 // 계산기
 void calculator() {
+<<<<<<< HEAD
     // 변수 지정 or 수학 식 임시 저장
     char str[100];
     
@@ -502,6 +564,47 @@ void calculator() {
             break;
         }
     }
+=======
+	// 변수 지정 or 수학 식 임시 저장
+	char str[100];
+
+	// 변수 명 저장
+	char variable[10];
+
+	// 변수 값 저장
+	int value[10];
+
+	int variableCount = 0;
+
+	// 연산자 임시 저장
+	char operator;
+
+	getchar();
+
+	// 변수 지정
+	while(1) {
+		printf("Input : ");
+		fgets(str, sizeof(str), stdin);
+		removeEnterInFgetsString(str);
+		if (getLength(str) == 0)
+			break;
+
+		// 변수식이면
+		if (!isOperation(str)) {
+			variable[variableCount] = getVariable(str);
+			value[variableCount] = getValue(str);
+			//            printf("variable = %c\n", variable[variableCount]);
+			//            printf("value = %d\n", value[variableCount]);
+			variableCount++;
+		}
+
+		// 연산식이면
+		else {
+			transformation(str, variable, value);
+			break;
+		}
+	}
+>>>>>>> master
 }
 
 
@@ -735,6 +838,7 @@ int checkOperatorLevel(char operator1, char operator2) {
  *           *value = 변수 값 배열
  */
 void transformation(char *str, char *variable, int *value) {
+<<<<<<< HEAD
     int index = 0;
     while (*(str + index) != '\0') {
         if (*(str + index) >= 'A' && *(str + index) <= 'Z') {
@@ -975,6 +1079,39 @@ int getFunctionValue(char* str, int functionIndex, int *valueLength, char *varia
         }
     }
     return result;
+=======
+	int index = 0;
+	while (*str != '\0') {
+		if (*str >= 'A' && *str <= 'Z') {
+			replaceInt(str, index, value[index]);
+			printf("Transformation : %s\n", str);
+		}
+		str++;
+		index++;
+	}
+}
+
+
+void replaceInt(char *str, int index, int value) {
+	char valueStack[100];
+	char valueStr[100];
+	int a = 1;
+	while (value / a) {
+		int num = value % (a * 10);
+		push(valueStack, num / a);
+		printf("num = %d\n", num / a);
+
+		a *= 10;
+	}
+
+	while (!isEmpty(valueStack)) {
+		int index = 0;
+		char c =  pop(valueStack);
+		printf("%c\n", c);
+		valueStr[index++] = pop(valueStack);
+	}
+	printf("valueStr = %s\n", valueStr);
+>>>>>>> master
 }
 
 
@@ -1206,6 +1343,7 @@ char getVariable(char *str) {
  * Output : 10
  */
 int getValue(char *str) {
+<<<<<<< HEAD
     char stack[100] = {'\0'};
     int stackCount = 0;
     int result = 0;
@@ -1258,10 +1396,66 @@ int getValue(char *str) {
         count *= 10;
     }
     return result;
+=======
+	char stack[100];
+
+	int result = 0;
+	int count = 1;
+	while(*str < '0' || *str > '9')
+		str++;
+	while(*str >= '0' && *str <= '9') {
+		push(stack, *str++);
+	}
+	while(!isEmpty(stack)) {
+		char c = pop(stack);
+		//        printf("%c\n", c);
+		switch(c) {
+			case '1':
+				result += 1 * count;
+				break;
+
+			case '2':
+				result += 2 * count;
+				break;
+
+			case '3':
+				result += 3 * count;
+				break;
+
+			case '4':
+				result += 4 * count;
+				break;
+
+			case '5':
+				result += 5 * count;
+				break;
+
+			case '6':
+				result += 6 * count;
+				break;
+
+			case '7':
+				result += 7 * count;
+				break;
+
+			case '8':
+				result += 8 * count;
+				break;
+
+			case '9':
+				result += 9 * count;
+				break;
+
+		}
+		count *= 10;
+	}
+	return result;
+>>>>>>> master
 }
 
 
 // 스택에 문자 하나 추가
+<<<<<<< HEAD
 
 void push(char* stack, char chr, int count) {
     stack[count] = chr;
@@ -1271,18 +1465,30 @@ void push(char* stack, char chr, int count) {
 // 스택에 수 하나 추가
 void pushDouble(double* stack, double chr, int count) {
     stack[count] = chr;
+=======
+void push(char* stack, char chr) {
+	stack[count++] = chr;
+>>>>>>> master
 }
 
 
 // 스택에 문자열 추가
+<<<<<<< HEAD
 void pushStr(char* stack, char *str, int count) {
     while(*str != '\0') {
         stack[count++] = *str++;
     }
+=======
+void pushStr(char* stack, char *str) {
+	while(*str != '\0') {
+		stack[count++] = *str++;
+	}
+>>>>>>> master
 }
 
 
 // 스택에 있는 문자 하나 출력
+<<<<<<< HEAD
 char pop(char* stack, int length) {
     char c = stack[length];
     stack[length] = '\0';
@@ -1295,12 +1501,22 @@ double popDouble(double* stack, int length) {
     double c = stack[length];
     stack[length] = 0;
     return c;
+=======
+char pop(char* stack) {
+	return stack[--count];
+>>>>>>> master
 }
 
 
 // 스택이 비었는지 확인
 int isEmpty(char *stack) {
+<<<<<<< HEAD
     if (*stack == '\0')
         return 1;
     return 0;
+=======
+	if (count == 0)
+		return 1;
+	return 0;
+>>>>>>> master
 }
