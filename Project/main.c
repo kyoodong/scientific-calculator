@@ -4,6 +4,7 @@
 #include <math.h>
 
 #define SCHEDULE_MAX_LENGTH 100
+#define swap(a,b) {int t; t = a; a = b; b = t;}
 
 // 월별 일 수
 int date[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -67,6 +68,7 @@ int main(void) {
 		printf("1) 공학용 계산기\n");
 		printf("2) 스케줄 관리\n");
 		printf("3) 프로그램 종료\n");
+
 
 		scanf("%d", &menuChoice);
 		switch(menuChoice) {
@@ -154,6 +156,7 @@ void copyStr(char* fromStr, char* toStr) {
 
 // 스케줄 삭제
 void deleteSchedule() {
+	int i, j;
 	int year, month, day;
 	char schedule[SCHEDULE_MAX_LENGTH];
 
@@ -164,7 +167,6 @@ void deleteSchedule() {
 	removeEnterInFgetsString(schedule);
 	printf("출력 : %d년 %d월 %d일 %s\n",year,month,day,schedule);
 
-	int i;
 	// 년 월 일 스케줄에 매칭되는 스케줄 index 찾기
 	for (i = 0; i < mScheduleCount; i++) {
 		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day && isEqual(mSchedule[i], schedule))
@@ -172,7 +174,7 @@ void deleteSchedule() {
 	}
 
 	if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day && isEqual(mSchedule[i],schedule)) {
-		for (int j = i + 1; j < mScheduleCount; j++) {
+		for (j = i + 1; j < mScheduleCount; j++) {
 			mScheduleYear[j - 1] = mScheduleYear[j];
 			mScheduleMonth[j - 1] = mScheduleMonth[j];
 			mScheduleDay[j - 1] = mScheduleDay[j];
@@ -216,7 +218,6 @@ void insertSchedule(int scheduleCount) {
 	for (i = 0; i < scheduleCount; i++) {
 		// 겹침
 		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day) {
-			overwrite = 1 ;
 			char answer;
 			printf("해당 날짜에 이미 일정이 있습니다. 일정을 추가하려면Yes, 덮어쓰려면 No를 입력하세요(Y or N)");
 			answer = getchar();
@@ -245,16 +246,15 @@ void insertSchedule(int scheduleCount) {
 	mScheduleMonth[scheduleCount] = month;
 	mScheduleDay[scheduleCount] = day;
 	copyStr(schedule, mSchedule[scheduleCount]);
-	if (overwrite == 0) { // Yes를 입력했을때or 일정이 없어서 추가
+	if (overwrite == 0) { // Yes를 입력했을때 or 일정이 없어서 추가
 		scheduleCount++;
 		mScheduleCount++;
-		printf("%d %d\n",scheduleCount,mScheduleCount);
 		printf("일정을 추가하였습니다.\n");
 		printf("아무키나 입력하세요.......");
 	}
-	
-//	if (!overwrite)
-//		mScheduleCount++;
+
+	//	if (!overwrite)
+	//		mScheduleCount++;
 	//if (mScheduleCount == scheduleCount)
 	//	mScheduleCount++;
 	else { // No를 입력했을때
@@ -263,7 +263,7 @@ void insertSchedule(int scheduleCount) {
 	}
 	getchar();
 	system("clear");
-	//sort();
+	sort();
 }
 
 int checkDate(int year, int month, int day) {
@@ -301,22 +301,26 @@ int checkDay(int year, int month, int day) {
 // 일정 정렬하기
 void sort() {
 	int i, j, temp;
-	char swap[20];
+	char swap[100];
 	for(i=0; i < mScheduleCount; i++) {
 		for(j=0; j < mScheduleCount - i - 1; j++) {
 			if(mScheduleYear[j] > mScheduleYear[j+1])
 			{
-				temp = mScheduleYear[j];
-				mScheduleYear[j] = mScheduleYear[j+1];
-				mScheduleYear[j+1] = temp;
 
-				temp = mScheduleMonth[j];
-				mScheduleMonth[j] = mScheduleMonth[j+1];
-				mScheduleMonth[j+1] = temp;
+				swap(mScheduleYear[j],mScheduleYear[j+1]);
+				swap(mScheduleMonth[j],mScheduleMonth[j+1]);
+				swap(mScheduleDay[j],mScheduleDay[j+1]);
+				/*temp = mScheduleYear[j];
+				  mScheduleYear[j] = mScheduleYear[j+1];
+				  mScheduleYear[j+1] = temp;
 
-				temp = mScheduleDay[j];
-				mScheduleDay[j] = mScheduleDay[j+1];
-				mScheduleDay[j+1] = temp;
+				  temp = mScheduleMonth[j];
+				  mScheduleMonth[j] = mScheduleMonth[j+1];
+				  mScheduleMonth[j+1] = temp;
+
+				  temp = mScheduleDay[j];
+				  mScheduleDay[j] = mScheduleDay[j+1];
+				  mScheduleDay[j+1] = temp;*/
 
 				copyStr(mSchedule[j], swap);
 				copyStr(mSchedule[j+1], mSchedule[j]);
@@ -330,17 +334,21 @@ void sort() {
 
 				if(mScheduleMonth[j] > mScheduleMonth[j+1])
 				{
-					temp = mScheduleYear[j];
-					mScheduleYear[j] = mScheduleYear[j+1];
-					mScheduleYear[j+1] = temp;
 
-					temp = mScheduleMonth[j];
-					mScheduleMonth[j] = mScheduleMonth[j+1];
-					mScheduleMonth[j+1] = temp;
+					swap(mScheduleYear[j],mScheduleYear[j+1]);
+					swap(mScheduleMonth[j],mScheduleMonth[j+1]);
+					swap(mScheduleDay[j],mScheduleDay[j+1]);
+					/*temp = mScheduleYear[j];
+					  mScheduleYear[j] = mScheduleYear[j+1];
+					  mScheduleYear[j+1] = temp;
 
-					temp = mScheduleDay[j];
-					mScheduleDay[j] = mScheduleDay[j+1];
-					mScheduleDay[j+1] = temp;
+					  temp = mScheduleMonth[j];
+					  mScheduleMonth[j] = mScheduleMonth[j+1];
+					  mScheduleMonth[j+1] = temp;
+
+					  temp = mScheduleDay[j];
+					  mScheduleDay[j] = mScheduleDay[j+1];
+					  mScheduleDay[j+1] = temp;*/
 
 					copyStr(mSchedule[j], swap);
 					copyStr(mSchedule[j+1], mSchedule[j]);
@@ -397,6 +405,7 @@ void printCalendar(int year, int month, int day) {
 	// 1년1월1일로부터 해당 년월일까지 총 일 수 계산
 	int i, j, k;
 	int leapYear = getLeapYear(year, month);
+	int checkSchedule[100] = {0}, breakpoint;
 	int allDay = year * 365 + leapYear;
 	for (i = 0; i < month - 1; i++)
 		allDay += date[i];
@@ -424,29 +433,38 @@ void printCalendar(int year, int month, int day) {
 		// 토요일까지 모두 출력 후 또는 day 모두 출력 후 개행
 		if (i % 7 == 0 || i == date[month - 1] + isLeap + skipDay) {
 			printf("\n");
-			// 날짜 밑에 일정 출력
-			for (k = i - weekCount + 1; k <= i; k++) {
-				weekCount = 0;
-				// 해당 날짜에 일정 있는지 검사
-				for (j = 0; j < mScheduleCount; j++) {
-					// 일정 있으면 출력
-					if (mScheduleYear[j] == year && mScheduleMonth[j] == month && mScheduleDay[j] == k - skipDay) {
-						int len = getLength(mSchedule[j]);
-						char str[100];
-						copyStr(mSchedule[j],str);
-						if(len >= 12) {
-							str[12] = 0;
-							printf("%s...", str);
+			while(1) {
+				breakpoint = 0;
+				// 날짜 밑에 일정 출력
+				for (k = i - weekCount + 1; k <= i; k++) {
+					// 해당 날짜에 일정 있는지 검사
+					for (j = 0; j < mScheduleCount; j++) {
+						//						weekCount = 0;
+						
+						// 일정 있으면 출력
+						if (checkSchedule[j] == 0 && mScheduleYear[j] == year &&
+								mScheduleMonth[j] == month && mScheduleDay[j] == k - skipDay) {
+							int len = getLength(mSchedule[j]);
+							char str[100];
+							checkSchedule[j] = 1;
+							breakpoint = 1;
+							copyStr(mSchedule[j],str);
+							if(len >= 12) {
+								str[12] = 0;
+								printf("%s...", str);
+							}
+							else {
+								printf("%s", mSchedule[j]);
+							}
+							break;
 						}
-						else {
-							printf("%s", mSchedule[j]);
-						}
-						break;
 					}
+					printf("\t\t");
 				}
-				printf("\t\t");
+				printf("\n");
+				if(breakpoint == 0) break;
 			}
-			printf("\n");
+			weekCount = 0;
 		}
 	}
 	printf("\n\n");
