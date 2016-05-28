@@ -536,7 +536,7 @@ void posifixNotaion(char* str, int length) {
                 while (!isEmpty(stack) && ((temp = pop(stack, --count)) != '(')) {
                     result[resultCount++] = temp;
                 }
-                printf("%s\n", result);
+                printf("Posifix notation : %s\n", result);
                 break;
                 
             case '+':
@@ -551,7 +551,7 @@ void posifixNotaion(char* str, int length) {
                     }
                 }
                 push(stack, *(str + i), count++);
-                printf("%s\n", result);
+                printf("Posifix notation : %s\n", result);
                 break;
                 
             case '*':
@@ -567,7 +567,7 @@ void posifixNotaion(char* str, int length) {
                     }
                 }
                 push(stack, *(str + i), count++);
-                printf("%s\n", result);
+                printf("Posifix notation : %s\n", result);
                 break;
                 
             default:
@@ -575,8 +575,9 @@ void posifixNotaion(char* str, int length) {
                     result[resultCount++] = *(str + i);
                     i++;
                 }
+                i--;
                 result[resultCount++] = ' ';
-                printf("%s\n", result);
+                printf("Posifix notation : %s\n", result);
                 break;
         }
     }
@@ -584,7 +585,8 @@ void posifixNotaion(char* str, int length) {
         char c = pop(stack, --count);
         result[resultCount++] = c;
         
-        printf("%s\n", result);
+//        printf("Posifix notation : ");
+        printf("Posifix notation : %s\n", result);
     }
     
     double numStack[100] = {0};
@@ -621,6 +623,7 @@ void posifixNotaion(char* str, int length) {
                     pushDouble(numStack, num2 / num1, numStackCount++);
                     break;
             }
+            printf("Posifix notation : ");
             printDoubleArray(numStack, numStackCount);
             printf("%s\n", result + i + 1);
         } else {
@@ -634,7 +637,7 @@ void posifixNotaion(char* str, int length) {
             i--;
 //            result[resultCount++] = ' ';
             
-            printf("%s\n", result);
+            printf("Posifix notation : %s\n", result);
             
             int ab = 0, c = 1;
             while (!isEmpty(curStack)) {
