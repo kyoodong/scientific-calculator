@@ -567,9 +567,9 @@ void posifixNotaion(char* str, int length) {
     int resultCount = 0;
     
     char stack[100] = {'\0'};
-    int count = 0;
+    int count = 0, i;
     char temp;
-    for (int i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
         if (*(str + i) == ' ') {
             continue;
         }
@@ -640,7 +640,7 @@ void posifixNotaion(char* str, int length) {
     double numStackCount = 0;
     
     // 계산
-    for (int i = 0; *(result + i) != '\0'; i++) {
+    for (i = 0; *(result + i) != '\0'; i++) {
         if (*(result + i) == ' ') {
             continue;
         }
@@ -701,7 +701,8 @@ void posifixNotaion(char* str, int length) {
 
 
 void printDoubleArray(double array[], int size) {
-    for (int i = 0; i < size; i++)
+    int i;
+    for (i = 0; i < size; i++)
         printf("%f ", array[i]);
 }
 
@@ -817,7 +818,7 @@ void transformation(char *str, char *variable, int *value) {
  */
 int replaceMathFunction(char *str, int functionIndex, int index, char *variableArray, int *valueArray) {
     char valueStr[10] = {'\0'};         // 결과 값 String
-    int functionLength, valueIndex, value, valueLength, strLength;
+    int functionLength, valueIndex, value, valueLength, strLength, i;
     
     if (functionIndex == 3) {       // sqrt
         functionLength = 4;
@@ -849,7 +850,8 @@ int replaceMathFunction(char *str, int functionIndex, int index, char *variableA
         strLength = getLength(str);
         
         // 수학함수 + 수학함수 인자 <-> 결과 값
-        for (int i = 0; i < strLength - index + 1; i++) {
+        
+        for (i = 0; i < strLength - index + 1; i++) {
             if (i < valueLength)
                 str[index + i - tempLength2] = valueStr[i];
             else
@@ -896,7 +898,7 @@ int replaceMathFunction(char *str, int functionIndex, int index, char *variableA
         strLength = getLength(str);
         
         // 수학함수 + 수학함수 인자 <-> 결과 값
-        for (int i = 0; i < strLength - index - valueLength; i++) {
+        for (i = 0; i < strLength - index - valueLength; i++) {
             if (i < valueLength)
                 str[index + i] = valueStr[i];
             else
@@ -1191,7 +1193,7 @@ int replaceVariableToInt(char *str, int index, char* variable, int* value) {
     char valueStr[100] = {'\0'};
     int valueStackIndex = 0;
     char var = *(str + index);
-    int valueIndex;
+    int valueIndex, i;
     for (valueIndex = 0; *variable != var; valueIndex++)
         variable++;
     
@@ -1203,11 +1205,11 @@ int replaceVariableToInt(char *str, int index, char* variable, int* value) {
     reverse(valueStr, valueStackIndex - 1);
     
     int length = getLength(valueStr);
-    for (int i = getLength(str); i > index; i--) {
+    for (i = getLength(str); i > index; i--) {
         *(str + i + length - 1) = *(str + i);
     }
     
-    for (int i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
         *(str + index++) = *(valueStr + i);
     }
     return length;
