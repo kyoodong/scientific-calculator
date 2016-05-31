@@ -12,11 +12,21 @@ int date[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // 스택 데이터 개수
 int mCount;
 
+// 스케줄 구조체
+struct mSchedule {
+    int year;
+    int month;
+    int day;
+    char schedule[20];
+};
+
+struct mSchedule mSchedule[SCHEDULE_MAX_LENGTH];
+
 // 스케줄 저장 배열
-int mScheduleYear[SCHEDULE_MAX_LENGTH] = {0};
-int mScheduleMonth[SCHEDULE_MAX_LENGTH] = {0};
-int mScheduleDay[SCHEDULE_MAX_LENGTH] = {0};
-char mSchedule[SCHEDULE_MAX_LENGTH][20] = {'\0'};
+//int mScheduleYear[SCHEDULE_MAX_LENGTH] = {0};
+//int mScheduleMonth[SCHEDULE_MAX_LENGTH] = {0};
+//int mScheduleDay[SCHEDULE_MAX_LENGTH] = {0};
+//char mSchedule[SCHEDULE_MAX_LENGTH][20] = {'\0'};
 
 // 스케줄 갯수
 int mScheduleCount = 0;
@@ -181,24 +191,24 @@ void deleteSchedule() {
 
 	// 년 월 일 스케줄에 매칭되는 스케줄 index 찾기
 	for (i = 0; i < mScheduleCount; i++) {
-		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day && isEqual(mSchedule[i], schedule))
+		if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule, schedule))
 			break;
 	}
 
-	if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day && isEqual(mSchedule[i],schedule)) {
+	if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule,schedule)) {
 		for (j = i + 1; j < mScheduleCount; j++) {
-			mScheduleYear[j - 1] = mScheduleYear[j];
-			mScheduleMonth[j - 1] = mScheduleMonth[j];
-			mScheduleDay[j - 1] = mScheduleDay[j];
-			copyStr(mSchedule[j], mSchedule[j -1]);
+			mSchedule[j - 1].year = mSchedule[j].year;
+			mSchedule[j - 1].month = mSchedule[j].month;
+			mSchedule[j - 1].day = mSchedule[j].day;
+			copyStr(mSchedule[j].schedule, mSchedule[j -1].schedule);
 		}
 		printf("%d년 %d월 %d일의 일정이 있습니다.\n",year,month,day);
 		printf("일정을 삭제하였습니다.\n");
 		mScheduleCount--;
-		mScheduleYear[mScheduleCount] = 0;
+		mSchedule[mScheduleCount].year = 0;
 	} else
 	{
-		printf("%d년 %d월 %d일의 일정이 없습니다.\n",year,month,day);
+		printf("%d년 %d월 %d일의 일정이 없습니다.\n", year, month, day);
 		printf("일치하는 일정이 없습니다.\n");
 	}
 	printf("아무키나 입력하세요.........");
@@ -229,7 +239,7 @@ void insertSchedule(int scheduleCount) {
 	int overwrite = 0;
 	for (i = 0; i < scheduleCount; i++) {
 		// 겹침
-		if (mScheduleYear[i] == year && mScheduleMonth[i] == month && mScheduleDay[i] == day) {
+		if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day) {
 			char answer;
 			printf("해당 날짜에 이미 일정이 있습니다. 일정을 추가하려면Yes, 덮어쓰려면 No를 입력하세요(Y or N)");
 			answer = getchar();
@@ -254,10 +264,10 @@ void insertSchedule(int scheduleCount) {
 	//if (!overwrite)
 	//	scheduleCount++;	
 
-	mScheduleYear[scheduleCount] = year;
-	mScheduleMonth[scheduleCount] = month;
-	mScheduleDay[scheduleCount] = day;
-	copyStr(schedule, mSchedule[scheduleCount]);
+	mSchedule[scheduleCount].year = year;
+	mSchedule[scheduleCount].month = month;
+	mSchedule[scheduleCount].day = day;
+	copyStr(schedule, mSchedule[scheduleCount].schedule);
 	if (overwrite == 0) { // Yes를 입력했을때 or 일정이 없어서 추가
 		scheduleCount++;
 		mScheduleCount++;
@@ -320,15 +330,19 @@ void swap(int* first, int* second) {
 
 // 일정 정렬하기
 void sort() {
-	int i, j, temp;
+	int i, j;
 	char scheduleTemp[100];
-	for(i=0; i < mScheduleCount; i++) {
-		for(j=0; j < mScheduleCount - i - 1; j++) {
-			if(mScheduleYear[j] > mScheduleYear[j+1])
-			{
-				swap(&mScheduleYear[j],&mScheduleYear[j+1]);
-				swap(&mScheduleMonth[j],&mScheduleMonth[j+1]);
-				swap(&mScheduleDay[j],&mScheduleDay[j+1]);
+    struct mSchedule tempSchedule;
+	for(i = 0; i < mScheduleCount; i++) {
+		for(j = 0; j < mScheduleCount - i - 1; j++) {
+			if(mSchedule[j].year > mSchedule[j+1].year) {
+                tempSchedule = mSchedule[j];
+                mSchedule[j] = mSchedule[j + 1];
+                mSchedule[j + 1] = tempSchedule;
+                
+//				swap(&mSchedule[j].year,&mSchedule[j+1].year);
+//				swap(&mSchedule[j].month,&mSchedule[j+1].month);
+//				swap(&mSchedule[j].day,&mSchedule[j+1].day);
 				/*temp = mScheduleYear[j];
 				  mScheduleYear[j] = mScheduleYear[j+1];
 				  mScheduleYear[j+1] = temp;
@@ -341,22 +355,24 @@ void sort() {
 				  mScheduleDay[j] = mScheduleDay[j+1];
 				  mScheduleDay[j+1] = temp;*/
 
-				copyStr(mSchedule[j], scheduleTemp);
-				copyStr(mSchedule[j+1], mSchedule[j]);
-				copyStr(scheduleTemp, mSchedule[j+1]);
+//				copyStr(mSchedule[j].schedule, scheduleTemp);
+//				copyStr(mSchedule[j+1].schedule, mSchedule[j].schedule);
+//				copyStr(scheduleTemp, mSchedule[j+1].schedule);
 
 
 			}
 
-			else if(mScheduleYear[j] == mScheduleYear[j+1])
+			else if(mSchedule[j].year == mSchedule[j+1].year)
 			{
 
-				if(mScheduleMonth[j] > mScheduleMonth[j+1])
-				{
-
-					swap(&mScheduleYear[j], &mScheduleYear[j+1]);
-					swap(&mScheduleMonth[j], &mScheduleMonth[j+1]);
-					swap(&mScheduleDay[j], &mScheduleDay[j+1]);
+				if(mSchedule[j].month > mSchedule[j+1].month) {
+                    tempSchedule = mSchedule[j];
+                    mSchedule[j] = mSchedule[j + 1];
+                    mSchedule[j + 1] = tempSchedule;
+                    
+//					swap(&mSchedule[j].year, &mSchedule[j+1].year);
+//					swap(&mSchedule[j].month, &mScheduleMonth[j+1]);
+//					swap(&mScheduleDay[j], &mScheduleDay[j+1]);
 					/*temp = mScheduleYear[j];
 					  mScheduleYear[j] = mScheduleYear[j+1];
 					  mScheduleYear[j+1] = temp;
@@ -369,9 +385,9 @@ void sort() {
 					  mScheduleDay[j] = mScheduleDay[j+1];
 					  mScheduleDay[j+1] = temp;*/
 
-					copyStr(mSchedule[j], scheduleTemp);
-					copyStr(mSchedule[j+1], mSchedule[j]);
-					copyStr(scheduleTemp, mSchedule[j+1]);
+//					copyStr(mSchedule[j], scheduleTemp);
+//					copyStr(mSchedule[j+1], mSchedule[j]);
+//					copyStr(scheduleTemp, mSchedule[j+1]);
 
 				}		
 			}
@@ -392,11 +408,11 @@ void scheduler() {
 	for(i=0; i < mScheduleCount; i++)
 	{
 
-		if((mScheduleYear[i] == mScheduleYear[i+1]) && (mScheduleMonth[i] == mScheduleMonth[i+1]))
+		if((mSchedule[i].year == mSchedule[i+1].year) && (mSchedule[i].month == mSchedule[i+1].month))
 			continue;
-		year = mScheduleYear[i];
-		month = mScheduleMonth[i];
-		day = mScheduleDay[i];
+		year = mSchedule[i].year;
+		month = mSchedule[i].month;
+		day = mSchedule[i].day;
 
 		printf("\t\t\t\t\t\t %d년 %d월\n\n", year, month);
 
@@ -461,19 +477,19 @@ void printCalendar(int year, int month, int day) {
 						//						weekCount = 0;
 						
 						// 일정 있으면 출력
-						if (checkSchedule[j] == 0 && mScheduleYear[j] == year &&
-								mScheduleMonth[j] == month && mScheduleDay[j] == k - skipDay) {
-							int len = getLength(mSchedule[j]);
+						if (checkSchedule[j] == 0 && mSchedule[j].year == year &&
+								mSchedule[j].month == month && mSchedule[j].day == k - skipDay) {
+							int len = getLength(mSchedule[j].schedule);
 							char str[100];
 							checkSchedule[j] = 1;
 							breakpoint = 1;
-							copyStr(mSchedule[j],str);
+							copyStr(mSchedule[j].schedule,str);
 							if(len >= 12) {
 								str[12] = 0;
 								printf("%s...", str);
 							}
 							else {
-								printf("%s", mSchedule[j]);
+								printf("%s", mSchedule[j].schedule);
 							}
 							break;
 						}
