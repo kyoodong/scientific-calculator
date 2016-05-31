@@ -27,12 +27,6 @@ struct mVariable {
 
 struct mSchedule mSchedule[MAX_LENGTH];
 
-// 스케줄 저장 배열
-//int mScheduleYear[MAX_LENGTH] = {0};
-//int mScheduleMonth[MAX_LENGTH] = {0};
-//int mScheduleDay[MAX_LENGTH] = {0};
-//char mSchedule[MAX_LENGTH][20] = {'\0'};
-
 // 스케줄 갯수
 int mScheduleCount = 0;
 
@@ -179,16 +173,11 @@ void deleteSchedule() {
 	if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule,schedule)) {
 		for (j = i + 1; j < mScheduleCount; j++) {
             mSchedule[j - 1] = mSchedule[j];
-//            mSchedule[j - 1].year = mSchedule[j].year;
-//			mSchedule[j - 1].month = mSchedule[j].month;
-//			mSchedule[j - 1].day = mSchedule[j].day;
-//			copyStr(mSchedule[j].schedule, mSchedule[j -1].schedule);
 		}
 		printf("%d년 %d월 %d일의 일정이 있습니다.\n",year,month,day);
 		printf("일정을 삭제하였습니다.\n");
 		mScheduleCount--;
         
-        // ??????
 		mSchedule[mScheduleCount].year = 0;
 	} else
 	{
@@ -203,7 +192,7 @@ void deleteSchedule() {
 /*
  * TODO : 스케줄 입력
  * @params
-        scheduleCount = 스케줄 개수
+ *      scheduleCount = 스케줄 개수
  */
 void insertSchedule(int scheduleCount) {
 	int i;
@@ -248,10 +237,6 @@ void insertSchedule(int scheduleCount) {
 		}
 	}
 
-	// 덮어쓰지 않겠다면 처음으로 돌아감
-	//if (!overwrite)
-	//	scheduleCount++;	
-
 	mSchedule[scheduleCount].year = year;
 	mSchedule[scheduleCount].month = month;
 	mSchedule[scheduleCount].day = day;
@@ -263,10 +248,6 @@ void insertSchedule(int scheduleCount) {
 		printf("아무키나 입력하세요.......");
 	}
 
-	//	if (!overwrite)
-	//		mScheduleCount++;
-	//if (mScheduleCount == scheduleCount)
-	//	mScheduleCount++;
 	else { // No를 입력했을때
 		printf("일정을 덮어썼습니다.\n");
 		printf("아무키나 입력하세요.......");
@@ -280,9 +261,9 @@ void insertSchedule(int scheduleCount) {
 /*
  * TODO : 날짜 제대로 입력했는지 확인
  * @params
-        year = 연
-        month = 월
-        day = 일
+ *      year = 연
+ *      month = 월
+ *      day = 일
  */
 int checkDateValidation(int year, int month, int day) {
 	// 1 ~ 12월 입력했는지 확인
@@ -477,7 +458,7 @@ int isLeapYear(int year) {
 
 /*
  * TODO : 윤년 몇 번 지나왔는지 계산
- * @params :
+ * @params
  *      year = 연도
  *      month = 월
  * @return : 윤년 횟수
@@ -489,10 +470,9 @@ int getLeapYear(int year, int month) {
 	// 2월 지났으면 해당 년도도 포함해서 계산
 	if (month > 2)
 		includeYear = 1;
-	for (i = 1; i < year + includeYear; i++) {
+	for (i = 1; i < year + includeYear; i++)
 		if (isLeapYear(i))
 			leapYear++;
-	}
 	return leapYear;
 }
 
@@ -656,12 +636,11 @@ void posifixNotaion(char str[], int length) {
             char curStack[10] = {'\0'};
             int curStackCount = 0;
             
-            while (*(result + i) >= '0' && *(result + i) <= '9') {
-                push(curStack, *(result + i), curStackCount++);
+            while (result[i] >= '0' && result[i] <= '9') {
+                push(curStack, result[i], curStackCount++);
                 i++;
             }
             i--;
-//            result[resultCount++] = ' ';
             
             printf("Posifix notation : %s\n", result);
             
@@ -670,8 +649,6 @@ void posifixNotaion(char str[], int length) {
                 ab += convertToInt(pop(curStack, --curStackCount)) * c;
                 c *= 10;
             }
-//            giprintf("ab = %d\n", ab);
-            
             pushDouble(numStack, ab, numStackCount++);
         }
     }
@@ -719,11 +696,11 @@ int checkOperator(char c) {
 /*
  * 연산자 우선순위 비교
  * @param :
-        operator1, operator2 = 비교할 연산자들
+ *      operator1, operator2 = 비교할 연산자들
  * @return :
-        0 = operator1이 더 낮음
-        1 = 같음
-        2 = operator1이 더 높음
+ *      0 = operator1이 더 낮음
+ *      1 = 같음
+ *      2 = operator1이 더 높음
  */
 int checkOperatorLevel(char operator1, char operator2) {
     switch (operator1) {
@@ -882,11 +859,11 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
 /*
  * TODO : 수학함수 인자값 추출
  * @params
-        str[] = 수식
-        functionIndex = 수학함수 위치(인덱스)
-        *valueLength = 결괏값 길이 리턴용
-        regVariable[] = 변수 리스트
-        functionLength = 수학 함수 길이
+ *      str[] = 수식
+ *      functionIndex = 수학함수 위치(인덱스)
+ *      *valueLength = 결괏값 길이 리턴용
+ *      regVariable[] = 변수 리스트
+ *      functionLength = 수학 함수 길이
  * @return : 수학함수 (앞)뒤의 인자값
  */
 int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVariable regVariable[], int functionLength) {
@@ -894,14 +871,15 @@ int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVa
     int stackCount = 0;
     int count = 1;
     int result = 0;
+    int i = 0;
     if (functionIndex == 2) {
-        while (*str == ' ') {
+        while (str[i] == ' ') {
             (*valueLength)++;
-            str--;
+            i--;
         }
-        while (*str >= '0' && *str <= '9') {
+        while (str[i] >= '0' && str[i] <= '9') {
             (*valueLength)++;
-            push(stack, *str--, stackCount++);
+            push(stack, str[i--], stackCount++);
         }
         char tempStack[10] = {'\0'};
         int tempCount = 0;
@@ -913,101 +891,27 @@ int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVa
         
         while (!isEmpty(tempStack)) {
             char c = pop(tempStack, --tempCount);
-            switch(c) {
-                case '1':
-                    result += 1 * count;
-                    break;
-                    
-                case '2':
-                    result += 2 * count;
-                    break;
-                    
-                case '3':
-                    result += 3 * count;
-                    break;
-                    
-                case '4':
-                    result += 4 * count;
-                    break;
-                    
-                case '5':
-                    result += 5 * count;
-                    break;
-                    
-                case '6':
-                    result += 6 * count;
-                    break;
-                    
-                case '7':
-                    result += 7 * count;
-                    break;
-                    
-                case '8':
-                    result += 8 * count;
-                    break;
-                    
-                case '9':
-                    result += 9 * count;
-                    break;
-                    
-            }
+            result += (c - '0') * count;
             count *= 10;
         }
     } else {
-        while (*str == ' ') {
+        while (str[i] == ' ') {
             (*valueLength)++;
-            str++;
+            i++;
         }
         
         // 수학 함수 뒤에 변수 있으면 변환
-        if (*str >= 'A' && *str <= 'B') {
-            replaceVariableToInt(str, 0, regVariable);
+        if (str[i] >= 'A' && str[i] <= 'B') {
+            replaceVariableToInt(&str[i], 0, regVariable);
         }
         
-        while (*str >= '0' && *str <= '9') {
+        while (str[i] >= '0' && str[i] <= '9') {
             (*valueLength)++;
-            push(stack, *str++, stackCount++);
+            push(stack, str[i++], stackCount++);
         }
         while(!isEmpty(stack)) {
             char c = pop(stack, --stackCount);
-            switch(c) {
-                case '1':
-                    result += 1 * count;
-                    break;
-                    
-                case '2':
-                    result += 2 * count;
-                    break;
-                    
-                case '3':
-                    result += 3 * count;
-                    break;
-                    
-                case '4':
-                    result += 4 * count;
-                    break;
-                    
-                case '5':
-                    result += 5 * count;
-                    break;
-                    
-                case '6':
-                    result += 6 * count;
-                    break;
-                    
-                case '7':
-                    result += 7 * count;
-                    break;
-                    
-                case '8':
-                    result += 8 * count;
-                    break;
-                    
-                case '9':
-                    result += 9 * count;
-                    break;
-                    
-            }
+            result += (c - '0') * count;
             count *= 10;
         }
     }
@@ -1194,7 +1098,6 @@ void convertToString(char str[], int num) {
  */
 int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) {
     char valueStr[100] = {'\0'};
-    int valueStackIndex = 0;
     char var = str[index];
     int valueIndex = 0, i;
     while (regVariable[valueIndex].name != var) {
@@ -1219,9 +1122,10 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
 
 
 /* 계산식인지 변수식인지 구분
- * @Param : *str = 식
- * @Return Value : 0 -> 변수식
- *				   1 -> 계산식 
+ * @param : *str = 식
+ * @return
+ *      0 -> 변수식
+ *      1 -> 계산식
  */
 int isOperation(char str[]) {
     int index = 0;
@@ -1289,9 +1193,9 @@ int getValue(char str[]) {
 /*
  * TODO : 스택에 문자 하나 추가
  * @params
-        stack[] : 스택
-        chr : 넣을 문자
-        top : 스택 크기
+ *      stack[] : 스택
+ *      chr : 넣을 문자
+ *      top : 스택 크기
  */
 void push(char stack[], char chr, int top) {
     stack[top] = chr;
@@ -1301,9 +1205,9 @@ void push(char stack[], char chr, int top) {
 /*
  * TODO : 스택에 수 하나 추가
  * @params
-        stack[] : 스택
-        num : 넣을 수
-        top : 스택 크기
+ *      stack[] : 스택
+ *      num : 넣을 수
+ *      top : 스택 크기
  */
 void pushDouble(double stack[], double num, int top) {
     stack[top] = num;
@@ -1313,8 +1217,8 @@ void pushDouble(double stack[], double num, int top) {
 /*
  * TODO : 스택에 있는 문자 하나 출력
  * @params
-        stack[] : 스택
-        top : 스택 크기
+ *      stack[] : 스택
+ *      top : 스택 크기
  * @return - 스택 맨 위 값
  */
 char pop(char stack[], int top) {
@@ -1327,8 +1231,8 @@ char pop(char stack[], int top) {
 /*
  * TODO : 스택에 있는 숫자 하나 출력
  * @params
-        stack[] : 스택
-        top : 스택 크기
+ *      stack[] : 스택
+ *      top : 스택 크기
  * @return - 스택 맨 위 값
  */
 double popDouble(double stack[], int top) {
@@ -1341,10 +1245,10 @@ double popDouble(double stack[], int top) {
 /*
  * TODO : 스택이 비었는지 확인
  * @params
-        stack[] : 스택
+ *      stack[] : 스택
  * @return
-        1 : 비었음
-        0 : 안비었음
+ *      1 : 비었음
+ *      0 : 안비었음
  */
 int isEmpty(char stack[]) {
     if (stack[0] == '\0')
@@ -1359,7 +1263,7 @@ int isEmpty(char stack[]) {
 /*
  * TODO : fgets는 마지막에 \n도 저장되기에 \n을 제거
  * @params
-        str[] = 문자열
+ *      str[] = 문자열
  */
 void removeEnterInFgetsString(char str[]) {
     int length = getLength(str);
@@ -1370,11 +1274,11 @@ void removeEnterInFgetsString(char str[]) {
 /*
  * TODO : 문자열 같은지 비교
  * @params
-        str1[] = 문자열
-        str2[] = 문자열
+ *      str1[] = 문자열
+ *      str2[] = 문자열
  * @return
-        0 = 같지 않음
-        1 = 같음
+ *      0 = 같지 않음
+ *      1 = 같음
  */
 int isEqual(char str1[], char str2[]) {
     int index = 0;
@@ -1392,8 +1296,8 @@ int isEqual(char str1[], char str2[]) {
 /*
  * TODO : 문자열 복사
  * @params
-        fromStr[] = 복사될 문자열
-        toStr[] = 저장 문자열
+ *      fromStr[] = 복사될 문자열
+ *      toStr[] = 저장 문자열
  */
 void copyStr(char fromStr[], char toStr[]) {
     int index = 0;
