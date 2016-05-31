@@ -37,20 +37,19 @@ struct mSchedule mSchedule[MAX_LENGTH];
 int mScheduleCount = 0;
 
 // 스택 함수
-void push(char*, char, int);
-void pushStr(char*, char*, int);
-char pop(char*, int);
-double popDouble(double*, int);
-void pushDouble(double*, double, int);
-int isEmpty(char*);
+void push(char[], char, int);
+char pop(char[], int);
+double popDouble(double[], int);
+void pushDouble(double[], double, int);
+int isEmpty(char[]);
 
 // 메뉴 함수
 void displaySchedule();
 void calculator();
 
 // 계산기 함수
-char getVariable(char*);
-int getValue(char*);
+char getVariable(char[]);
+int getValue(char[]);
 int getLength(char*);
 int isOperation(char*);
 void transformation(char *str, struct mVariable[]);
@@ -583,20 +582,21 @@ void calculator() {
  *      str = 수식
  *      length = 길이
  */
-void posifixNotaion(char* str, int length) {
+void posifixNotaion(char str[], int length) {
     char result[100] = {'\0'};
-    int resultCount = 0;
-    
     char stack[100] = {'\0'};
-    int count = 0, i;
+    int resultCount = 0, count = 0, i;
     char temp;
+    double numStack[100] = {0};
+    double numStackCount = 0;
+    
     for (i = 0; i < length; i++) {
-        if (*(str + i) == ' ') {
+        if (str[i] == ' ') {
             continue;
         }
-        switch (*(str + i)) {
+        switch (str[i]) {
             case '(':
-                push(stack, *(str + i), count++);
+                push(stack, str[i], count++);
                 break;
                 
             case ')':
@@ -618,7 +618,7 @@ void posifixNotaion(char* str, int length) {
                         break;
                     }
                 }
-                push(stack, *(str + i), count++);
+                push(stack, str[i], count++);
                 printf("Posifix notation : %s\n", result);
                 break;
                 
@@ -627,20 +627,20 @@ void posifixNotaion(char* str, int length) {
                 while (!isEmpty(stack)) {
                     temp = pop(stack, --count);
                     // 우선순위가 같다면
-                    if (checkOperatorLevel(temp, *(str + i)) == 1) {
+                    if (checkOperatorLevel(temp, str[i]) == 1) {
                         result[resultCount++] = temp;
                     } else {
                         push(stack, temp, count++);
                         break;
                     }
                 }
-                push(stack, *(str + i), count++);
+                push(stack, str[i], count++);
                 printf("Posifix notation : %s\n", result);
                 break;
                 
             default:
-                while (*(str + i) >= '0' && *(str + i) <= '9') {
-                    result[resultCount++] = *(str + i);
+                while (str[i] >= '0' && str[i] <= '9') {
+                    result[resultCount++] = str[i];
                     i++;
                 }
                 i--;
@@ -649,24 +649,22 @@ void posifixNotaion(char* str, int length) {
                 break;
         }
     }
+    
+    
     while (!isEmpty(stack)) {
         char c = pop(stack, --count);
         result[resultCount++] = c;
         
-//        printf("Posifix notation : ");
         printf("Posifix notation : %s\n", result);
     }
     
-    double numStack[100] = {0};
-    double numStackCount = 0;
-    
     // 계산
-    for (i = 0; *(result + i) != '\0'; i++) {
-        if (*(result + i) == ' ') {
+    for (i = 0; result[i] != '\0'; i++) {
+        if (result[i] == ' ') {
             continue;
         }
         int operator;
-        if ((operator = checkOperator(*(result + i)))) {
+        if ((operator = checkOperator(result[i]))) {
             double num1 = popDouble(numStack, --numStackCount);
             double num2 = popDouble(numStack, --numStackCount);
             
@@ -742,23 +740,18 @@ int checkOperator(char c) {
     switch (c) {
         case '+':
             return 1;
-            break;
             
         case '-':
             return 2;
-            break;
             
         case '*':
             return 3;
-            break;
             
         case '/':
             return 4;
-            break;
             
         default:
             return 0;
-            break;
     }
 }
 
@@ -1291,10 +1284,11 @@ int getLength(char str[]) {
  * Input : A = 10
  * Output : A
  */
-char getVariable(char *str) {
-	while(*str == ' ')
-		str++;
-	return *str;
+char getVariable(char str[]) {
+    int index = 0;
+	while(str[index] == ' ')
+        index++;
+	return str[index];
 }
 
 
@@ -1303,57 +1297,17 @@ char getVariable(char *str) {
  * Input : A = 10
  * Output : 10
  */
-int getValue(char *str) {
-
+int getValue(char str[]) {
     char stack[100] = {'\0'};
-    int stackCount = 0;
-    int result = 0;
-    int count = 1;
-    while(*str < '0' || *str > '9')
-        str++;
-    while(*str >= '0' && *str <= '9') {
-        push(stack, *str++, stackCount++);
-    }
+    int stackCount = 0, result = 0, count = 1, i = 0;
+    while(str[i] < '0' || str[i] > '9')
+        i++;
+    while(str[i] >= '0' && str[i] <= '9')
+        push(stack, str[i++], stackCount++);
+    
     while(!isEmpty(stack)) {
         char c = pop(stack, --stackCount);
-        switch(c) {
-            case '1':
-                result += 1 * count;
-                break;
-                
-            case '2':
-                result += 2 * count;
-                break;
-                
-            case '3':
-                result += 3 * count;
-                break;
-                
-            case '4':
-                result += 4 * count;
-                break;
-                
-            case '5':
-                result += 5 * count;
-                break;
-                
-            case '6':
-                result += 6 * count;
-                break;
-                
-            case '7':
-                result += 7 * count;
-                break;
-                
-            case '8':
-                result += 8 * count;
-                break;
-                
-            case '9':
-                result += 9 * count;
-                break;
-                
-        }
+        result += (c - '0') * count;
         count *= 10;
     }
     return result;
@@ -1361,49 +1315,68 @@ int getValue(char *str) {
 }
 
 
-// 스택에 문자 하나 추가
-
-void push(char* stack, char chr, int count) {
-    stack[count] = chr;
+/*
+ * TODO : 스택에 문자 하나 추가
+ * @params
+        stack[] : 스택
+        chr : 넣을 문자
+        top : 스택 크기
+ */
+void push(char stack[], char chr, int top) {
+    stack[top] = chr;
 }
 
 
-// 스택에 수 하나 추가
-void pushDouble(double* stack, double chr, int count) {
-    stack[count] = chr;
+/*
+ * TODO : 스택에 수 하나 추가
+ * @params
+        stack[] : 스택
+        num : 넣을 수
+        top : 스택 크기
+ */
+void pushDouble(double stack[], double num, int top) {
+    stack[top] = num;
 }
 
 
-// 스택에 문자열 추가
-
-void pushStr(char* stack, char *str, int count) {
-    while(*str != '\0') {
-        stack[count++] = *str++;
-    }
-}
-
-
-// 스택에 있는 문자 하나 출력
-
-char pop(char* stack, int length) {
-    char c = stack[length];
-    stack[length] = '\0';
+/*
+ * TODO : 스택에 있는 문자 하나 출력
+ * @params
+        stack[] : 스택
+        top : 스택 크기
+ * @return - 스택 맨 위 값
+ */
+char pop(char stack[], int top) {
+    char c = stack[top];
+    stack[top] = '\0';
     return c;
 }
 
 
-// 스택에 있는 숫자 하나 출력
-double popDouble(double* stack, int length) {
-    double c = stack[length];
-    stack[length] = 0;
+/*
+ * TODO : 스택에 있는 숫자 하나 출력
+ * @params
+        stack[] : 스택
+        top : 스택 크기
+ * @return - 스택 맨 위 값
+ */
+double popDouble(double stack[], int top) {
+    double c = stack[top];
+    stack[top] = 0;
     return c;
 }
 
 
-// 스택이 비었는지 확인
-int isEmpty(char *stack) {
-
-    if (*stack == '\0')
+/*
+ * TODO : 스택이 비었는지 확인
+ * @params
+        stack[] : 스택
+ * @return
+        1 : 비었음
+        0 : 안비었음
+ */
+int isEmpty(char stack[]) {
+    if (stack[0] == '\0')
         return 1;
     return 0;
 }
