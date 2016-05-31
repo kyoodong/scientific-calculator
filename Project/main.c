@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define SCHEDULE_MAX_LENGTH 100
-#define swap(a,b) {int t; t = a; a = b; b = t;}
+//#define swap(a,b) {int t; t = a; a = b; b = t;}
 
 // 월별 일 수
 int date[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -310,18 +310,25 @@ int checkDay(int year, int month, int day) {
 	return 0;
 }
 
+
+void swap(int* first, int* second) {
+    char temp = *first;
+    *first = *second;
+    *second = temp;
+}
+
+
 // 일정 정렬하기
 void sort() {
 	int i, j, temp;
-	char swap[100];
+	char scheduleTemp[100];
 	for(i=0; i < mScheduleCount; i++) {
 		for(j=0; j < mScheduleCount - i - 1; j++) {
 			if(mScheduleYear[j] > mScheduleYear[j+1])
 			{
-
-				swap(mScheduleYear[j],mScheduleYear[j+1]);
-				swap(mScheduleMonth[j],mScheduleMonth[j+1]);
-				swap(mScheduleDay[j],mScheduleDay[j+1]);
+				swap(&mScheduleYear[j],&mScheduleYear[j+1]);
+				swap(&mScheduleMonth[j],&mScheduleMonth[j+1]);
+				swap(&mScheduleDay[j],&mScheduleDay[j+1]);
 				/*temp = mScheduleYear[j];
 				  mScheduleYear[j] = mScheduleYear[j+1];
 				  mScheduleYear[j+1] = temp;
@@ -334,9 +341,9 @@ void sort() {
 				  mScheduleDay[j] = mScheduleDay[j+1];
 				  mScheduleDay[j+1] = temp;*/
 
-				copyStr(mSchedule[j], swap);
+				copyStr(mSchedule[j], scheduleTemp);
 				copyStr(mSchedule[j+1], mSchedule[j]);
-				copyStr(swap, mSchedule[j+1]);
+				copyStr(scheduleTemp, mSchedule[j+1]);
 
 
 			}
@@ -347,9 +354,9 @@ void sort() {
 				if(mScheduleMonth[j] > mScheduleMonth[j+1])
 				{
 
-					swap(mScheduleYear[j],mScheduleYear[j+1]);
-					swap(mScheduleMonth[j],mScheduleMonth[j+1]);
-					swap(mScheduleDay[j],mScheduleDay[j+1]);
+					swap(&mScheduleYear[j], &mScheduleYear[j+1]);
+					swap(&mScheduleMonth[j], &mScheduleMonth[j+1]);
+					swap(&mScheduleDay[j], &mScheduleDay[j+1]);
 					/*temp = mScheduleYear[j];
 					  mScheduleYear[j] = mScheduleYear[j+1];
 					  mScheduleYear[j+1] = temp;
@@ -362,9 +369,9 @@ void sort() {
 					  mScheduleDay[j] = mScheduleDay[j+1];
 					  mScheduleDay[j+1] = temp;*/
 
-					copyStr(mSchedule[j], swap);
+					copyStr(mSchedule[j], scheduleTemp);
 					copyStr(mSchedule[j+1], mSchedule[j]);
-					copyStr(swap, mSchedule[j+1]);
+					copyStr(scheduleTemp, mSchedule[j+1]);
 
 				}		
 			}
