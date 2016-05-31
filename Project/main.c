@@ -50,15 +50,15 @@ void calculator();
 // 계산기 함수
 char getVariable(char[]);
 int getValue(char[]);
-int getLength(char*);
-int isOperation(char*);
-void transformation(char *str, struct mVariable[]);
-int replaceVariableToInt(char*, int, struct mVariable[]);
-int replaceMathFunction(char*, int, int, struct mVariable[]);
-int getFunctionValue(char*, int, int*, struct mVariable[], int);
-int checkFunction(char*);
-int isStartWith(char*, char*);
-void convertToString(char*, int);
+int getLength(char[]);
+int isOperation(char[]);
+void transformation(char str[], struct mVariable[]);
+int replaceVariableToInt(char[], int, struct mVariable[]);
+int replaceMathFunction(char[], int, int, struct mVariable[]);
+int getFunctionValue(char[], int, int*, struct mVariable[], int);
+int checkFunction(char[]);
+int isStartWith(char[], char[]);
+void convertToString(char[], int);
 void posifixNotaion();
 int checkOperator(char);
 int checkOperatorLevel(char, char);
@@ -68,7 +68,7 @@ void printDoubleArray(double[], int);
 // 스케줄관리 함수
 int checkDateValidation(int, int, int);
 int checkDayValidation(int, int, int);
-int checkMonthValidationValidation(int);
+int checkMonthValidation(int);
 int schedulerMenu();
 int getLeapYear(int, int);
 void printCalendar(int, int, int);
@@ -78,9 +78,9 @@ void deleteSchedule();
 void sort();
 
 // String 함수
-char* removeEnterInFgetsString(char[]);
-void copyStr(char*, char*);
-int isEqual(char*, char*);
+void removeEnterInFgetsString(char[]);
+void copyStr(char[], char[]);
+int isEqual(char[], char[]);
 
 
 int main(void) {
@@ -140,7 +140,9 @@ int main(void) {
 
 //************************ 스케줄러 **************************//
 
-// 스케쥴 관리 메뉴 출력
+/*
+ * TODO : 스케쥴 관리 메뉴 출력
+ */
 int schedulerMenu() {
 	int menu;
 	printf("1. 스케줄 입력\n");
@@ -153,7 +155,9 @@ int schedulerMenu() {
 }
 
 
-// 스케줄 삭제
+/*
+ * TODO : 스케줄 삭제
+ */
 void deleteSchedule() {
 	int i, j;
 	int year, month, day;
@@ -196,7 +200,11 @@ void deleteSchedule() {
 }
 
 
-// 스케줄 입력
+/*
+ * TODO : 스케줄 입력
+ * @params
+        scheduleCount = 스케줄 개수
+ */
 void insertSchedule(int scheduleCount) {
 	int i;
 	int year, month, day;
@@ -269,6 +277,13 @@ void insertSchedule(int scheduleCount) {
 }
 
 
+/*
+ * TODO : 날짜 제대로 입력했는지 확인
+ * @params
+        year = 연
+        month = 월
+        day = 일
+ */
 int checkDateValidation(int year, int month, int day) {
 	// 1 ~ 12월 입력했는지 확인
 	if (!checkMonthValidation(month)) {
@@ -313,21 +328,10 @@ int checkDayValidation(int year, int month, int day) {
 
 
 /*
- * TODO : first와 second를 바꾸는 함수
- */
-void swap(int* first, int* second) {
-    int temp = *first;
-    *first = *second;
-    *second = temp;
-}
-
-
-/*
  * TODO : 정렬
  */
 void sort() {
 	int i, j;
-	char scheduleTemp[100];
     struct mSchedule tempSchedule;
 	for(i = 0; i < mScheduleCount; i++) {
 		for(j = 0; j < mScheduleCount - i - 1; j++) {
@@ -335,56 +339,15 @@ void sort() {
                 tempSchedule = mSchedule[j];
                 mSchedule[j] = mSchedule[j + 1];
                 mSchedule[j + 1] = tempSchedule;
-                
-//				swap(&mSchedule[j].year,&mSchedule[j+1].year);
-//				swap(&mSchedule[j].month,&mSchedule[j+1].month);
-//				swap(&mSchedule[j].day,&mSchedule[j+1].day);
-				/*temp = mScheduleYear[j];
-				  mScheduleYear[j] = mScheduleYear[j+1];
-				  mScheduleYear[j+1] = temp;
-
-				  temp = mScheduleMonth[j];
-				  mScheduleMonth[j] = mScheduleMonth[j+1];
-				  mScheduleMonth[j+1] = temp;
-
-				  temp = mScheduleDay[j];
-				  mScheduleDay[j] = mScheduleDay[j+1];
-				  mScheduleDay[j+1] = temp;*/
-
-//				copyStr(mSchedule[j].schedule, scheduleTemp);
-//				copyStr(mSchedule[j+1].schedule, mSchedule[j].schedule);
-//				copyStr(scheduleTemp, mSchedule[j+1].schedule);
-
-
 			}
 
 			else if(mSchedule[j].year == mSchedule[j+1].year)
 			{
 
-				if(mSchedule[j].month > mSchedule[j+1].month) {
+				if (mSchedule[j].month > mSchedule[j+1].month) {
                     tempSchedule = mSchedule[j];
                     mSchedule[j] = mSchedule[j + 1];
                     mSchedule[j + 1] = tempSchedule;
-                    
-//					swap(&mSchedule[j].year, &mSchedule[j+1].year);
-//					swap(&mSchedule[j].month, &mScheduleMonth[j+1]);
-//					swap(&mScheduleDay[j], &mScheduleDay[j+1]);
-					/*temp = mScheduleYear[j];
-					  mScheduleYear[j] = mScheduleYear[j+1];
-					  mScheduleYear[j+1] = temp;
-
-					  temp = mScheduleMonth[j];
-					  mScheduleMonth[j] = mScheduleMonth[j+1];
-					  mScheduleMonth[j+1] = temp;
-
-					  temp = mScheduleDay[j];
-					  mScheduleDay[j] = mScheduleDay[j+1];
-					  mScheduleDay[j+1] = temp;*/
-
-//					copyStr(mSchedule[j], scheduleTemp);
-//					copyStr(mSchedule[j+1], mSchedule[j]);
-//					copyStr(scheduleTemp, mSchedule[j+1]);
-
 				}		
 			}
 		}
@@ -398,13 +361,11 @@ void sort() {
  * TODO : 스케줄 보기
  */
 void displaySchedule() {
-	//printf("%d",mScheduleCount);
 	int i, year, day, month;
 	getchar();
 	printf("%d\n",mScheduleCount);
-	for(i=0; i < mScheduleCount; i++)
-	{
-		if((mSchedule[i].year == mSchedule[i+1].year) && (mSchedule[i].month == mSchedule[i+1].month))
+	for (i = 0; i < mScheduleCount; i++) {
+		if((mSchedule[i].year == mSchedule[i + 1].year) && (mSchedule[i].month == mSchedule[i + 1].month))
 			continue;
 		year = mSchedule[i].year;
 		month = mSchedule[i].month;
@@ -421,13 +382,12 @@ void displaySchedule() {
 				break;
 		}
 	}
-
 }
 
 
 /*
  * 캘린더 출력
- * @Params : year = 년도
+ * @params : year = 년도
  *			leapYear = 윤년 횟수
  * 			month = 월
  *			day = 일
@@ -1067,7 +1027,7 @@ int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVa
         5 = cos
         6 = tan
  */
-int checkFunction(char *str) {
+int checkFunction(char str[]) {
     if (isStartWith(str, "log"))
         return 1;
     else if (isStartWith(str, "^"))
@@ -1084,10 +1044,21 @@ int checkFunction(char *str) {
 }
 
 
-int isStartWith(char* allStr, char* startStr) {
-    while (*startStr != '\0') {
-        if (*allStr++ != *startStr++)
+/*
+ * TODO : allStr이 startStr로 시작하는지 검사
+ * @params
+        allStr[] : 전체 문자열
+        startStr[] : 기준 문자열
+ * @return
+        0 : startStr로 시작하지 않음
+        1 : startStr로 시작함
+ */
+int isStartWith(char allStr[], char startStr[]) {
+    int index = 0;
+    while (startStr[index] != '\0') {
+        if (allStr[index] != startStr[index])
             return 0;
+        index++;
     }
     return 1;
 }
@@ -1252,9 +1223,10 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
  * @Return Value : 0 -> 변수식
  *				   1 -> 계산식 
  */
-int isOperation(char *str) {
-	while (*str++ != '\0')
-		if (*str == '=')
+int isOperation(char str[]) {
+    int index = 0;
+	while (str[index++] != '\0')
+		if (str[index] == '=')
 			return 0;
 	return 1;
 }
@@ -1311,7 +1283,6 @@ int getValue(char str[]) {
         count *= 10;
     }
     return result;
-
 }
 
 
@@ -1385,29 +1356,50 @@ int isEmpty(char stack[]) {
 
 //************************** String ***************************//
 
-// fgets는 마지막에 \n도 저장되기에 \n을 제거.
-char* removeEnterInFgetsString(char str[]) {
+/*
+ * TODO : fgets는 마지막에 \n도 저장되기에 \n을 제거
+ * @params
+        str[] = 문자열
+ */
+void removeEnterInFgetsString(char str[]) {
     int length = getLength(str);
     str[length - 1] = '\0';
-    return str;
 }
 
 
-// 문자열 같은지 비교
-int isEqual(char* str1, char* str2) {
-    while (*str1 != '\0' && *str2 != '\0') {
-        if (*str1++ != *str2++)
+/*
+ * TODO : 문자열 같은지 비교
+ * @params
+        str1[] = 문자열
+        str2[] = 문자열
+ * @return
+        0 = 같지 않음
+        1 = 같음
+ */
+int isEqual(char str1[], char str2[]) {
+    int index = 0;
+    while (str1[index] != '\0' && str2[index] != '\0') {
+        if (str1[index] != str2[index])
             return 0;
+        index++;
     }
-    if (*str1 != *str2)
+    if (str1[index] != str2[index])
         return 0;
     return 1;
 }
 
 
-// 문자열 복사
-void copyStr(char* fromStr, char* toStr) {
-    while(*fromStr != '\0')
-        *toStr++ = *fromStr++;
-    *toStr = 0;
+/*
+ * TODO : 문자열 복사
+ * @params
+        fromStr[] = 복사될 문자열
+        toStr[] = 저장 문자열
+ */
+void copyStr(char fromStr[], char toStr[]) {
+    int index = 0;
+    while(fromStr[index] != '\0') {
+        toStr[index] = fromStr[index];
+        index++;
+    }
+    toStr[index] = '\0';
 }
