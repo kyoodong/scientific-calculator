@@ -59,7 +59,7 @@ int replaceMathFunction(char*, int, int, struct mVariable[]);
 int getFunctionValue(char*, int, int*, struct mVariable[], int);
 int checkFunction(char*);
 int isStartWith(char*, char*);
-int convertToString(char*, int);
+void convertToString(char*, int);
 void posifixNotaion();
 int checkOperator(char);
 int checkOperatorLevel(char, char);
@@ -836,7 +836,7 @@ void transformation(char str[], struct mVariable regVariable[]) {
  *      index = 전체 문자열 중 수학 함수의 첫글자 인덱스 값
  * @return : 결과값 길이
  */
-int replaceMathFunction(char *str, int functionIndex, int index, struct mVariable regVariable[]) {
+int replaceMathFunction(char str[], int functionIndex, int index, struct mVariable regVariable[]) {
     char valueStr[10] = {'\0'};         // 결과 값 String
     int functionLength, valueIndex, value, valueLength, strLength, i;
     
@@ -870,12 +870,11 @@ int replaceMathFunction(char *str, int functionIndex, int index, struct mVariabl
         strLength = getLength(str);
         
         // 수학함수 + 수학함수 인자 <-> 결과 값
-        
         for (i = 0; i < strLength - index + 1; i++) {
             if (i < valueLength)
                 str[index + i - tempLength2] = valueStr[i];
             else
-                str[index + i - tempLength2] = *(str + index + i + functionLength - valueLength - tempLength);
+                str[index + i - tempLength2] = str[index + i + functionLength - valueLength - tempLength];
         }
     } else {                                    // not pow
         valueIndex = index + functionLength;
@@ -907,9 +906,6 @@ int replaceMathFunction(char *str, int functionIndex, int index, struct mVariabl
                 // 탄젠트
                 value = tan(value);
                 break;
-                
-            default:
-                break;
         }
         
         // 결과 값 String 변환 (value -> valueStr)
@@ -922,14 +918,25 @@ int replaceMathFunction(char *str, int functionIndex, int index, struct mVariabl
             if (i < valueLength)
                 str[index + i] = valueStr[i];
             else
-                str[index + i] = *(str + index + i + functionLength - valueLength);
+                str[index + i] = str[index + i + functionLength - valueLength];
         }
     }
     
     return valueLength;
 }
 
-int getFunctionValue(char* str, int functionIndex, int *valueLength, struct mVariable regVariable[], int functionLength) {
+
+/*
+ * TODO : 수학함수 인자값 추출
+ * @params
+        str[] = 수식
+        functionIndex = 수학함수 위치(인덱스)
+        *valueLength = 결괏값 길이 리턴용
+        regVariable[] = 변수 리스트
+        functionLength = 수학 함수 길이
+ * @return : 수학함수 (앞)뒤의 인자값
+ */
+int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVariable regVariable[], int functionLength) {
     char stack[10] = {'\0'};
     int stackCount = 0;
     int count = 1;
@@ -1055,6 +1062,18 @@ int getFunctionValue(char* str, int functionIndex, int *valueLength, struct mVar
 }
 
 
+/*
+ * TODO: 수학함수 판별
+ * @params : str[] = 변수 or 수학함수로 시작하는 수식
+ * @return
+        0 = 함수 아님
+        1 = log
+        2 = pow
+        3 = sqrt
+        4 = sin
+        5 = cos
+        6 = tan
+ */
 int checkFunction(char *str) {
     if (isStartWith(str, "log"))
         return 1;
@@ -1190,18 +1209,18 @@ void reverse(char stack[], int size) {
 
 
 /*
- * 숫자를 문자열로 바꾸는 함수
+ * 수를 문자열로 바꾸는 함수
+ * @param
+        str[] = 저장할 문자열 배열
+        num = 바꿀 수
  */
-int convertToString(char *str, int num) {
-    if (num < 10) {
-        *(str + 0) = convertToChar(num);
-//        printf("num1 = %d\n", num);
-        return 0;
+void convertToString(char str[], int num) {
+    int index = 0;
+    while (num) {
+        push(str, convertToChar(num % 10), index++);
+        num /= 10;
     }
-    int index = convertToString(str, num / 10) + 1;
-//    printf("num2 = %d\n", num % 10);
-    *(str + index) = convertToChar(num % 10);
-    return index + 1;
+    reverse(str, index);
 }
 
 
@@ -1221,19 +1240,15 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
     int curValue = regVariable[valueIndex].value;
     
     // int -> string
-    while (curValue) {
-        push(valueStr, convertToChar(curValue % 10), valueStackIndex++);
-        curValue /= 10;
-    }
-    reverse(valueStr, valueStackIndex);
+    convertToString(valueStr, curValue);
     
     int length = getLength(valueStr);
     for (i = getLength(str); i > index; i--) {
-        *(str + i + length - 1) = *(str + i);
+        str[i + length - 1] = str[i];
     }
     
     for (i = 0; i < length; i++) {
-        *(str + index++) = *(valueStr + i);
+        str[index++] = valueStr[i];
     }
     return length;
 }
@@ -1258,8 +1273,12 @@ void convertToLast() {
 }
 
 
-// 문자열 길이 얻는 함수
-int getLength(char *str) {
+/*
+ * TODO : 문자열 길이 얻기
+ * @param : str[] = 문자열
+ * @return : 문자열 길이
+ */
+int getLength(char str[]) {
 	int count = 0;
 	while(*str++ != '\0')
 		count++;
