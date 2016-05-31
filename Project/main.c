@@ -312,7 +312,7 @@ int checkDay(int year, int month, int day) {
 
 
 void swap(int* first, int* second) {
-    char temp = *first;
+    int temp = *first;
     *first = *second;
     *second = temp;
 }
