@@ -207,7 +207,7 @@ void deleteSchedule() {
 void insertSchedule(int scheduleCount) {
     int i;
     int year, month, day;
-    char schedule[100];
+    char schedule[MAX_LENGTH];
     while (1) {
         printf("입력 : ");
         scanf("%d %d %d", &year, &month, &day);
@@ -387,7 +387,7 @@ void printCalendar(int year, int month, int day) {
     // 1년1월1일로부터 해당 년월일까지 총 일 수 계산
     int i, j = 0, k;
     int leapYear = getLeapYear(year, month);
-    int checkSchedule[100] = {0}, breakpoint;
+    int checkSchedule[MAX_LENGTH] = {0}, breakpoint;
     int allDay = year * 365 + leapYear;
     for (i = 0; i < month - 1; i++)
         allDay += date[i];
@@ -423,7 +423,7 @@ void printCalendar(int year, int month, int day) {
                         if (checkSchedule[j] == 0 && mSchedule[j].year == year &&
                             mSchedule[j].month == month && mSchedule[j].day == k - skipDay) {
                             int len = getLength(mSchedule[j].schedule);
-                            char str[100];
+                            char str[MAX_LENGTH];
                             checkSchedule[j] = 1;
                             breakpoint = 1;
                             copyStr(mSchedule[j].schedule,str);
@@ -492,7 +492,7 @@ int getLeapYear(int year, int month) {
  */
 void calculator() {
     // 수식 저장
-    char str[100];
+    char str[MAX_LENGTH];
     
     // 변수
     struct mVariable regVariable[10];
@@ -552,11 +552,11 @@ void calculator() {
  *      length = 길이
  */
 void posifixNotaion(char str[], int length) {
-    char result[100] = {'\0'};
-    char stack[100] = {'\0'};
+    char result[MAX_LENGTH] = {'\0'};
+    char stack[MAX_LENGTH] = {'\0'};
     int resultCount = 0, count = 0, i;
     char temp;
-    double numStack[100] = {0};
+    double numStack[MAX_LENGTH] = {0};
     double numStackCount = 0;
     
     for (i = 0; i < length; i++) {
@@ -1108,7 +1108,7 @@ void convertToString(char str[], int num) {
  * 변수를 숫자로 대체하는 함수
  */
 int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) {
-    char valueStr[100] = {'\0'};
+    char valueStr[MAX_LENGTH] = {'\0'};
     char var = str[index];
     int valueIndex = 0, i;
     
@@ -1182,7 +1182,7 @@ char getVariable(char str[]) {
  * Output : 10
  */
 int getValue(char str[]) {
-    char stack[100] = {'\0'};
+    char stack[MAX_LENGTH] = {'\0'};
     int stackCount = 0, result = 0, count = 1, i = 0;
     while(str[i] < '0' || str[i] > '9')
         i++;
