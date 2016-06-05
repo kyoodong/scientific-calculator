@@ -20,6 +20,7 @@ struct mSchedule {
     char schedule[20];
 };
 
+// 계산기 변수 구조체
 struct mVariable {
     char name;
     int value;
@@ -63,6 +64,7 @@ void printDoubleArray(double[], int);
 int checkDateValidation(int, int, int);
 int checkDayValidation(int, int, int);
 int checkMonthValidation(int);
+void scheduler();
 int schedulerMenu();
 int getLeapYear(int, int);
 void printCalendar(int, int, int);
@@ -96,29 +98,7 @@ int main(void) {
                 break;
                 
             case 2:
-                while (1) {
-                    // 스케줄러
-                    subMenu = schedulerMenu();
-                    switch(subMenu) {
-                        case 1:
-                            insertSchedule(mScheduleCount);
-                            break;
-                            
-                        case 2:
-                            deleteSchedule();
-                            break;
-                            
-                        case 3:
-                            displaySchedule();
-                            break;
-                            
-                        case 4:
-                            system("clear");
-                            break;
-                    }
-                    if(subMenu == 4)
-                        break;
-                }
+                scheduler();
                 break;
                 
             case 3:
@@ -133,6 +113,36 @@ int main(void) {
 }
 
 //************************ 스케줄러 **************************//
+
+/*
+ * TODO : 스케쥴러 메인
+ */
+void scheduler() {
+    while (1) {
+        // 스케줄러
+        int subMenu = schedulerMenu();
+        switch(subMenu) {
+            case 1:
+                insertSchedule(mScheduleCount);
+                break;
+                
+            case 2:
+                deleteSchedule();
+                break;
+                
+            case 3:
+                displaySchedule();
+                break;
+                
+            case 4:
+                system("clear");
+                break;
+        }
+        if(subMenu == 4)
+            break;
+    }
+}
+
 
 /*
  * TODO : 스케쥴 관리 메뉴 출력
