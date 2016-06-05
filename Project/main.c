@@ -50,7 +50,7 @@ int isOperation(char[]);
 void transformation(char str[], struct mVariable[]);
 int replaceVariableToInt(char[], int, struct mVariable[]);
 int replaceMathFunction(char[], int, int, struct mVariable[]);
-int getFunctionValue(char[], int, int*, struct mVariable[], int);
+int getFunctionValue(char[], int, int, int*, struct mVariable[], int);
 int checkFunction(char[]);
 int isStartWith(char[], char[]);
 void convertToString(char[], int);
@@ -819,12 +819,12 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
         valueIndex = index - 1;
         
         // ^ 이전의 값
-        value = getFunctionValue(str + valueIndex, functionIndex, &tempLength, regVariable,  functionLength);
+        value = getFunctionValue(str, valueIndex, functionIndex, &tempLength, regVariable,  functionLength);
         functionLength += tempLength;
         valueIndex = index + 1;
         
         // ^ 이후의 값
-        int temp = getFunctionValue(str + valueIndex, functionIndex + 1, &tempLength2, regVariable, functionLength);
+        int temp = getFunctionValue(str, valueIndex, functionIndex + 1, &tempLength2, regVariable, functionLength);
         functionLength += tempLength2;
         
         // 결과 값
@@ -844,7 +844,7 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
         }
     } else {                                    // not pow
         valueIndex = index + functionLength;
-        value = getFunctionValue(str + valueIndex, functionIndex, &functionLength, regVariable, functionLength);
+        value = getFunctionValue(str, valueIndex, functionIndex, &functionLength, regVariable, functionLength);
         
         // 함수 별 계산
         switch (functionIndex) {
@@ -902,12 +902,12 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
  *      functionLength = 수학 함수 길이
  * @return : 수학함수 (앞)뒤의 인자값
  */
-int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVariable regVariable[], int functionLength) {
+int getFunctionValue(char str[], int index, int functionIndex, int *valueLength, struct mVariable regVariable[], int functionLength) {
     char stack[10] = {'\0'};
     int stackCount = 0;
     int count = 1;
     int result = 0;
-    int i = 0;
+    int i = index;
     if (functionIndex == 2) {
         while (str[i] == ' ') {
             (*valueLength)++;
@@ -939,6 +939,7 @@ int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVa
         // 수학 함수 뒤에 변수 있으면 변환
         if (str[i] >= 'A' && str[i] <= 'B') {
             replaceVariableToInt(&str[i], 0, regVariable);
+            printf("Transformation : %s\n", str);
         }
         
         while (str[i] >= '0' && str[i] <= '9') {
