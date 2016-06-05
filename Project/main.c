@@ -501,9 +501,26 @@ void calculator() {
         
         // 변수 저장
         if (!isOperation(str)) {
-            regVariable[variableCount].name = getVariable(str);
-            regVariable[variableCount].value = getValue(str);
-            variableCount++;
+            int i;
+            char variable = getVariable(str);
+            char value = getValue(str);
+            
+            // 변수명 중복 검사
+            for (i = 0; i < variableCount; i++) {
+                // 중복
+                if (regVariable[i].name == variable) {
+                    regVariable[i].name = variable;
+                    regVariable[i].value = value;
+                    break;
+                }
+            }
+            
+            // 비중복
+            if (i == variableCount) {
+                regVariable[variableCount].name = variable;
+                regVariable[variableCount].value = value;
+                variableCount++;
+            }
         } else if (isEqual(str, "!@#$")) {
             system("clear");
             break;
