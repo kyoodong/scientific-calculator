@@ -678,14 +678,12 @@ void posifixNotaion(char str[], int length) {
             }
             i--;
             
-            //            printf("Posifix notation : %s\n", result);
-            
-            int ab = 0, c = 1;
+            int num = 0, mul = 1;
             while (!isEmpty(curStack)) {
-                ab += convertToInt(pop(curStack, --curStackCount)) * c;
-                c *= 10;
+                num += convertToInt(pop(curStack, --curStackCount)) * mul;
+                mul *= 10;
             }
-            pushDouble(numStack, ab, numStackCount++);
+            pushDouble(numStack, num, numStackCount++);
         }
     }
     printf("\n");
