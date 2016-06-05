@@ -78,58 +78,58 @@ int isEqual(char[], char[]);
 
 
 int main(void) {
-	int menuChoice;
-	int subMenu;
-
-	while(1){
-		printf("\tMenu\n");
-		printf("1) 공학용 계산기\n");
-		printf("2) 스케줄 관리\n");
-		printf("3) 프로그램 종료\n");
-
-
-		scanf("%d", &menuChoice);
-		switch(menuChoice) {
-			case 1:
-				// 계산기
-				calculator();
-				break;
-
-			case 2:
-				while (1) {
-					// 스케줄러
-					subMenu = schedulerMenu();
-					switch(subMenu) {
-						case 1:
-							insertSchedule(mScheduleCount);
-							break;
-
-						case 2:
-							deleteSchedule();
-							break;
-
-						case 3:
-							displaySchedule();
-							break;
-
-						case 4:
-							system("clear");
-							break;
-					}
-					if(subMenu == 4)
-						break;
-				}
-				break;
-
-			case 3:
-				// 종료
-				printf("종료됩니다.\n");
-				break;
-		}
-		if(menuChoice == 3)
-			break;
-	}
-	return 0;
+    int menuChoice;
+    int subMenu;
+    
+    while(1){
+        printf("\tMenu\n");
+        printf("1) 공학용 계산기\n");
+        printf("2) 스케줄 관리\n");
+        printf("3) 프로그램 종료\n");
+        
+        
+        scanf("%d", &menuChoice);
+        switch(menuChoice) {
+            case 1:
+                // 계산기
+                calculator();
+                break;
+                
+            case 2:
+                while (1) {
+                    // 스케줄러
+                    subMenu = schedulerMenu();
+                    switch(subMenu) {
+                        case 1:
+                            insertSchedule(mScheduleCount);
+                            break;
+                            
+                        case 2:
+                            deleteSchedule();
+                            break;
+                            
+                        case 3:
+                            displaySchedule();
+                            break;
+                            
+                        case 4:
+                            system("clear");
+                            break;
+                    }
+                    if(subMenu == 4)
+                        break;
+                }
+                break;
+                
+            case 3:
+                // 종료
+                printf("종료됩니다.\n");
+                break;
+        }
+        if(menuChoice == 3)
+            break;
+    }
+    return 0;
 }
 
 //************************ 스케줄러 **************************//
@@ -138,14 +138,14 @@ int main(void) {
  * TODO : 스케쥴 관리 메뉴 출력
  */
 int schedulerMenu() {
-	int menu;
-	printf("1. 스케줄 입력\n");
-	printf("2. 스케줄 삭제\n");
-	printf("3. 스케줄 보기\n");
-	printf("4. Main menu\n");
-	printf("메뉴 : ");
-	scanf("%d", &menu);
-	return menu;
+    int menu;
+    printf("1. 스케줄 입력\n");
+    printf("2. 스케줄 삭제\n");
+    printf("3. 스케줄 보기\n");
+    printf("4. Main menu\n");
+    printf("메뉴 : ");
+    scanf("%d", &menu);
+    return menu;
 }
 
 
@@ -153,39 +153,39 @@ int schedulerMenu() {
  * TODO : 스케줄 삭제
  */
 void deleteSchedule() {
-	int i, j;
-	int year, month, day;
-	char schedule[MAX_LENGTH];
-
-	printf("입력 : ");
-	scanf("%d %d %d", &year, &month, &day);
-	getchar();
-	fgets(schedule, sizeof(schedule), stdin);
-	removeEnterInFgetsString(schedule);
-	printf("출력 : %d년 %d월 %d일 %s\n",year,month,day,schedule);
-
-	// 년 월 일 스케줄에 매칭되는 스케줄 index 찾기
-	for (i = 0; i < mScheduleCount; i++) {
-		if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule, schedule))
-			break;
-	}
-
-	if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule,schedule)) {
-		for (j = i + 1; j < mScheduleCount; j++) {
+    int i, j;
+    int year, month, day;
+    char schedule[MAX_LENGTH];
+    
+    printf("입력 : ");
+    scanf("%d %d %d", &year, &month, &day);
+    getchar();
+    fgets(schedule, sizeof(schedule), stdin);
+    removeEnterInFgetsString(schedule);
+    printf("출력 : %d년 %d월 %d일 %s\n",year,month,day,schedule);
+    
+    // 년 월 일 스케줄에 매칭되는 스케줄 index 찾기
+    for (i = 0; i < mScheduleCount; i++) {
+        if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule, schedule))
+            break;
+    }
+    
+    if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day && isEqual(mSchedule[i].schedule,schedule)) {
+        for (j = i + 1; j < mScheduleCount; j++) {
             mSchedule[j - 1] = mSchedule[j];
-		}
-		printf("%d년 %d월 %d일의 일정이 있습니다.\n",year,month,day);
-		printf("일정을 삭제하였습니다.\n");
-		mScheduleCount--;
+        }
+        printf("%d년 %d월 %d일의 일정이 있습니다.\n",year,month,day);
+        printf("일정을 삭제하였습니다.\n");
+        mScheduleCount--;
         
-		mSchedule[mScheduleCount].year = 0;
-	} else
-	{
-		printf("%d년 %d월 %d일의 일정이 없습니다.\n", year, month, day);
-		printf("일치하는 일정이 없습니다.\n");
-	}
-	printf("아무키나 입력하세요.........");
-	getchar();
+        mSchedule[mScheduleCount].year = 0;
+    } else
+    {
+        printf("%d년 %d월 %d일의 일정이 없습니다.\n", year, month, day);
+        printf("일치하는 일정이 없습니다.\n");
+    }
+    printf("아무키나 입력하세요.........");
+    getchar();
 }
 
 
@@ -195,66 +195,66 @@ void deleteSchedule() {
  *      scheduleCount = 스케줄 개수
  */
 void insertSchedule(int scheduleCount) {
-	int i;
-	int year, month, day;
-	char schedule[100];
-	while (1) {
-		printf("입력 : ");
-		scanf("%d %d %d", &year, &month, &day);
-		getchar();
-		fgets(schedule, sizeof(schedule), stdin);
-		removeEnterInFgetsString(schedule);
-
-		// 날짜 제대로 입력했는지 확인
-		if (checkDateValidation(year, month, day)) {
-			break;
-		}
-	}
-	printf("출력 : %d년 %d월 %d일 %s\n", year, month, day, schedule);
-
-	// 일정 겹치는지 확인
-	int overwrite = 0;
-	for (i = 0; i < scheduleCount; i++) {
-		// 겹침
-		if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day) {
-			char answer;
-			printf("해당 날짜에 이미 일정이 있습니다. 일정을 추가하려면Yes, 덮어쓰려면 No를 입력하세요(Y or N)");
-			answer = getchar();
-			getchar();
-			// 추가
-			if (answer == 'Y' || answer == 'y') {
-				break ;
-			}
-			// x되돌아가기 덮어쓰기
-			else
-			{
-				overwrite = 1;
-				scheduleCount = i;
-				break;
-			}
-			//overwrite = 0 ;
-			//break;
-		}
-	}
-
-	mSchedule[scheduleCount].year = year;
-	mSchedule[scheduleCount].month = month;
-	mSchedule[scheduleCount].day = day;
-	copyStr(schedule, mSchedule[scheduleCount].schedule);
-	if (overwrite == 0) { // Yes를 입력했을때 or 일정이 없어서 추가
-		scheduleCount++;
-		mScheduleCount++;
-		printf("일정을 추가하였습니다.\n");
-		printf("아무키나 입력하세요.......");
-	}
-
-	else { // No를 입력했을때
-		printf("일정을 덮어썼습니다.\n");
-		printf("아무키나 입력하세요.......");
-	}
-	getchar();
-	system("clear");
-	sort();
+    int i;
+    int year, month, day;
+    char schedule[100];
+    while (1) {
+        printf("입력 : ");
+        scanf("%d %d %d", &year, &month, &day);
+        getchar();
+        fgets(schedule, sizeof(schedule), stdin);
+        removeEnterInFgetsString(schedule);
+        
+        // 날짜 제대로 입력했는지 확인
+        if (checkDateValidation(year, month, day)) {
+            break;
+        }
+    }
+    printf("출력 : %d년 %d월 %d일 %s\n", year, month, day, schedule);
+    
+    // 일정 겹치는지 확인
+    int overwrite = 0;
+    for (i = 0; i < scheduleCount; i++) {
+        // 겹침
+        if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day) {
+            char answer;
+            printf("해당 날짜에 이미 일정이 있습니다. 일정을 추가하려면Yes, 덮어쓰려면 No를 입력하세요(Y or N)");
+            answer = getchar();
+            getchar();
+            // 추가
+            if (answer == 'Y' || answer == 'y') {
+                break ;
+            }
+            // x되돌아가기 덮어쓰기
+            else
+            {
+                overwrite = 1;
+                scheduleCount = i;
+                break;
+            }
+            //overwrite = 0 ;
+            //break;
+        }
+    }
+    
+    mSchedule[scheduleCount].year = year;
+    mSchedule[scheduleCount].month = month;
+    mSchedule[scheduleCount].day = day;
+    copyStr(schedule, mSchedule[scheduleCount].schedule);
+    if (overwrite == 0) { // Yes를 입력했을때 or 일정이 없어서 추가
+        scheduleCount++;
+        mScheduleCount++;
+        printf("일정을 추가하였습니다.\n");
+        printf("아무키나 입력하세요.......");
+    }
+    
+    else { // No를 입력했을때
+        printf("일정을 덮어썼습니다.\n");
+        printf("아무키나 입력하세요.......");
+    }
+    getchar();
+    system("clear");
+    sort();
 }
 
 
@@ -266,15 +266,15 @@ void insertSchedule(int scheduleCount) {
  *      day = 일
  */
 int checkDateValidation(int year, int month, int day) {
-	// 1 ~ 12월 입력했는지 확인
-	if (!checkMonthValidation(month)) {
-		printf("1 ~ 12월로 입력해주세요.\n");
-		return 0;
-	} else if (!checkDayValidation(year, month, day)) {
-		printf("%d년 %d월 %d일은 존재하지 않습니다.\n", year, month, day);
-		return 0;
-	}
-	return 1;
+    // 1 ~ 12월 입력했는지 확인
+    if (!checkMonthValidation(month)) {
+        printf("1 ~ 12월로 입력해주세요.\n");
+        return 0;
+    } else if (!checkDayValidation(year, month, day)) {
+        printf("%d년 %d월 %d일은 존재하지 않습니다.\n", year, month, day);
+        return 0;
+    }
+    return 1;
 }
 
 
@@ -284,9 +284,9 @@ int checkDateValidation(int year, int month, int day) {
  *      month = 월
  */
 int checkMonthValidation(int month) {
-	if (month >= 1 && month <= 12)
-		return 1;
-	return 0;
+    if (month >= 1 && month <= 12)
+        return 1;
+    return 0;
 }
 
 
@@ -298,13 +298,13 @@ int checkMonthValidation(int month) {
  *      day = 일
  */
 int checkDayValidation(int year, int month, int day) {
-	int leap = isLeapYear(year);
-	if (day > 0 && day <= date[month - 1])
-		return 1;
-	else if (month == 2 && leap)
-		if (day > 0 && day <= 29)
-			return 1;
-	return 0;
+    int leap = isLeapYear(year);
+    if (day > 0 && day <= date[month - 1])
+        return 1;
+    else if (month == 2 && leap)
+        if (day > 0 && day <= 29)
+            return 1;
+    return 0;
 }
 
 
@@ -312,27 +312,27 @@ int checkDayValidation(int year, int month, int day) {
  * TODO : 정렬
  */
 void sort() {
-	int i, j;
+    int i, j;
     struct mSchedule tempSchedule;
-	for(i = 0; i < mScheduleCount; i++) {
-		for(j = 0; j < mScheduleCount - i - 1; j++) {
-			if(mSchedule[j].year > mSchedule[j+1].year) {
+    for(i = 0; i < mScheduleCount; i++) {
+        for(j = 0; j < mScheduleCount - i - 1; j++) {
+            if(mSchedule[j].year > mSchedule[j+1].year) {
                 tempSchedule = mSchedule[j];
                 mSchedule[j] = mSchedule[j + 1];
                 mSchedule[j + 1] = tempSchedule;
-			}
-
-			else if(mSchedule[j].year == mSchedule[j+1].year)
-			{
-
-				if (mSchedule[j].month > mSchedule[j+1].month) {
+            }
+            
+            else if(mSchedule[j].year == mSchedule[j+1].year)
+            {
+                
+                if (mSchedule[j].month > mSchedule[j+1].month) {
                     tempSchedule = mSchedule[j];
                     mSchedule[j] = mSchedule[j + 1];
                     mSchedule[j + 1] = tempSchedule;
-				}		
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }
 
 
@@ -342,27 +342,27 @@ void sort() {
  * TODO : 스케줄 보기
  */
 void displaySchedule() {
-	int i, year, day, month;
-	getchar();
-	printf("%d\n",mScheduleCount);
-	for (i = 0; i < mScheduleCount; i++) {
-		if((mSchedule[i].year == mSchedule[i + 1].year) && (mSchedule[i].month == mSchedule[i + 1].month))
-			continue;
-		year = mSchedule[i].year;
-		month = mSchedule[i].month;
-		day = mSchedule[i].day;
-
-		printf("\t\t\t\t\t\t %d년 %d월\n\n", year, month);
-
-		// 캘린더 출력
-		printCalendar(year, month, day);
-		while(1){
-			char c;
-			c = getchar();
-			if(c == '\n')
-				break;
-		}
-	}
+    int i, year, day, month;
+    getchar();
+    printf("%d\n",mScheduleCount);
+    for (i = 0; i < mScheduleCount; i++) {
+        if((mSchedule[i].year == mSchedule[i + 1].year) && (mSchedule[i].month == mSchedule[i + 1].month))
+            continue;
+        year = mSchedule[i].year;
+        month = mSchedule[i].month;
+        day = mSchedule[i].day;
+        
+        printf("\t\t\t\t\t\t %d년 %d월\n\n", year, month);
+        
+        // 캘린더 출력
+        printCalendar(year, month, day);
+        while(1){
+            char c;
+            c = getchar();
+            if(c == '\n')
+                break;
+        }
+    }
 }
 
 
@@ -374,70 +374,70 @@ void displaySchedule() {
  *			day = 일
  */
 void printCalendar(int year, int month, int day) {
-	// 1년1월1일로부터 해당 년월일까지 총 일 수 계산
-	int i, j = 0, k;
-	int leapYear = getLeapYear(year, month);
-	int checkSchedule[100] = {0}, breakpoint;
-	int allDay = year * 365 + leapYear;
-	for (i = 0; i < month - 1; i++)
-		allDay += date[i];
-
-	// 캘린더 출력 시 시작 요일 계산
-	int skipDay = allDay % 7;
-
-	// 2월이면 윤년인지 확인해서 윤년이면 29일까지 출력
-	int isLeap = 0;
-	if (month == 2 && isLeapYear(year))
-		isLeap = 1;
-
-	// 캘린더 출력 (윤년의 2월이면 29일까지, 시작 요일 포함)
-	int weekCount = 1;
-	printf("Sun.\t\tMon.\t\tTues.\t\tWed\t\tThurs.\t\tFri.\t\tSat.\n");
-	for (i = 1; i <= date[month - 1] + isLeap + skipDay; i++, weekCount++) {
-		if (i <= skipDay)
-			printf("\t\t");
-
-		// 날짜 출력
-		else
-			printf("%d\t\t", i - skipDay);
-
+    // 1년1월1일로부터 해당 년월일까지 총 일 수 계산
+    int i, j = 0, k;
+    int leapYear = getLeapYear(year, month);
+    int checkSchedule[100] = {0}, breakpoint;
+    int allDay = year * 365 + leapYear;
+    for (i = 0; i < month - 1; i++)
+        allDay += date[i];
+    
+    // 캘린더 출력 시 시작 요일 계산
+    int skipDay = allDay % 7;
+    
+    // 2월이면 윤년인지 확인해서 윤년이면 29일까지 출력
+    int isLeap = 0;
+    if (month == 2 && isLeapYear(year))
+        isLeap = 1;
+    
+    // 캘린더 출력 (윤년의 2월이면 29일까지, 시작 요일 포함)
+    int weekCount = 1;
+    printf("Sun.\t\tMon.\t\tTues.\t\tWed\t\tThurs.\t\tFri.\t\tSat.\n");
+    for (i = 1; i <= date[month - 1] + isLeap + skipDay; i++, weekCount++) {
+        if (i <= skipDay)
+            printf("\t\t");
+        
+        // 날짜 출력
+        else
+            printf("%d\t\t", i - skipDay);
+        
         // 일정 체크
-		if (i % 7 == 0 || i == date[month - 1] + isLeap + skipDay) {
-			printf("\n");
-			while(1) {
-				breakpoint = 0;
-				// 날짜 밑에 일정 출력
-				for (k = i - weekCount + 1; k <= i; k++) {
-					for (j = 0; j < mScheduleCount; j++) {
-						// 일정 출력
-						if (checkSchedule[j] == 0 && mSchedule[j].year == year &&
-								mSchedule[j].month == month && mSchedule[j].day == k - skipDay) {
-							int len = getLength(mSchedule[j].schedule);
-							char str[100];
-							checkSchedule[j] = 1;
-							breakpoint = 1;
-							copyStr(mSchedule[j].schedule,str);
+        if (i % 7 == 0 || i == date[month - 1] + isLeap + skipDay) {
+            printf("\n");
+            while(1) {
+                breakpoint = 0;
+                // 날짜 밑에 일정 출력
+                for (k = i - weekCount + 1; k <= i; k++) {
+                    for (j = 0; j < mScheduleCount; j++) {
+                        // 일정 출력
+                        if (checkSchedule[j] == 0 && mSchedule[j].year == year &&
+                            mSchedule[j].month == month && mSchedule[j].day == k - skipDay) {
+                            int len = getLength(mSchedule[j].schedule);
+                            char str[100];
+                            checkSchedule[j] = 1;
+                            breakpoint = 1;
+                            copyStr(mSchedule[j].schedule,str);
                             
                             // 12글자 넘으면 ...으로 자른다
-							if(len >= 12) {
-								str[12] = '\0';
-								printf("%s...", str);
-							}
-							else {
-								printf("%s", mSchedule[j].schedule);
-							}
-							break;
-						}
-					}
-					printf("\t\t");
-				}
-				printf("\n");
-				if(breakpoint == 0) break;
-			}
-			weekCount = 0;
-		}
-	}
-	printf("\n\n");
+                            if(len >= 12) {
+                                str[12] = '\0';
+                                printf("%s...", str);
+                            }
+                            else {
+                                printf("%s", mSchedule[j].schedule);
+                            }
+                            break;
+                        }
+                    }
+                    printf("\t\t");
+                }
+                printf("\n");
+                if(breakpoint == 0) break;
+            }
+            weekCount = 0;
+        }
+    }
+    printf("\n\n");
 }
 
 
@@ -447,12 +447,12 @@ void printCalendar(int year, int month, int day) {
  * @return : 윤년이면 1 아니면 0
  */
 int isLeapYear(int year) {
-	if (year % 100 == 0) {
-		if (year % 400 == 0)
-			return 1;
-	} else if (year % 4 == 0)
-		return 1;
-	return 0;
+    if (year % 100 == 0) {
+        if (year % 400 == 0)
+            return 1;
+    } else if (year % 4 == 0)
+        return 1;
+    return 0;
 }
 
 
@@ -464,16 +464,16 @@ int isLeapYear(int year) {
  * @return : 윤년 횟수
  */
 int getLeapYear(int year, int month) {
-	int i;
-	int leapYear = 0;
-	int includeYear = 0;
-	// 2월 지났으면 해당 년도도 포함해서 계산
-	if (month > 2)
-		includeYear = 1;
-	for (i = 1; i < year + includeYear; i++)
-		if (isLeapYear(i))
-			leapYear++;
-	return leapYear;
+    int i;
+    int leapYear = 0;
+    int includeYear = 0;
+    // 2월 지났으면 해당 년도도 포함해서 계산
+    if (month > 2)
+        includeYear = 1;
+    for (i = 1; i < year + includeYear; i++)
+        if (isLeapYear(i))
+            leapYear++;
+    return leapYear;
 }
 
 
@@ -498,19 +498,21 @@ void calculator() {
         removeEnterInFgetsString(str);      // fgets의 마지막 \n 제거
         if (getLength(str) == 0)            // 아무것도 입력안하면 다시 입력
             break;
-    
+        
         // 변수 저장
         if (!isOperation(str)) {
             regVariable[variableCount].name = getVariable(str);
             regVariable[variableCount].value = getValue(str);
             variableCount++;
+        } else if (isEqual(str, "!@#$")) {
+            system("clear");
+            break;
         }
         
         // 연산식이면
         else {
             transformation(str, regVariable);           // 변수나 수학 함수를 수로 변환
             posifixNotaion(str, getLength(str));           // 후위 표기법으로 변환
-            break;
         }
     }
 }
@@ -544,6 +546,7 @@ void posifixNotaion(char str[], int length) {
                 while (!isEmpty(stack) && ((temp = pop(stack, --count)) != '(')) {
                     result[resultCount++] = temp;
                 }
+                result[resultCount++] = ' ';
                 printf("Posifix notation : %s\n", result);
                 break;
                 
@@ -559,7 +562,10 @@ void posifixNotaion(char str[], int length) {
                     }
                 }
                 push(stack, str[i], count++);
-                printf("Posifix notation : %s\n", result);
+                if (checkOperator(result[resultCount - 1])) {
+                    result[resultCount++] = ' ';
+                    printf("Posifix notation : %s\n", result);
+                }
                 break;
                 
             case '*':
@@ -575,7 +581,10 @@ void posifixNotaion(char str[], int length) {
                     }
                 }
                 push(stack, str[i], count++);
-                printf("Posifix notation : %s\n", result);
+                if (checkOperator(result[resultCount - 1])) {
+                    result[resultCount++] = ' ';
+                    printf("Posifix notation : %s\n", result);
+                }
                 break;
                 
             default:
@@ -594,7 +603,7 @@ void posifixNotaion(char str[], int length) {
     while (!isEmpty(stack)) {
         char c = pop(stack, --count);
         result[resultCount++] = c;
-        
+        result[resultCount++] = ' ';
         printf("Posifix notation : %s\n", result);
     }
     
@@ -629,6 +638,7 @@ void posifixNotaion(char str[], int length) {
                     pushDouble(numStack, num2 / num1, numStackCount++);
                     break;
             }
+            result[resultCount++] = ' ';
             printf("Posifix notation : ");
             printDoubleArray(numStack, numStackCount);
             printf("%s\n", result + i + 1);
@@ -642,7 +652,7 @@ void posifixNotaion(char str[], int length) {
             }
             i--;
             
-            printf("Posifix notation : %s\n", result);
+            //            printf("Posifix notation : %s\n", result);
             
             int ab = 0, c = 1;
             while (!isEmpty(curStack)) {
@@ -659,14 +669,14 @@ void posifixNotaion(char str[], int length) {
 void printDoubleArray(double array[], int size) {
     int i;
     for (i = 0; i < size; i++)
-        printf("%f ", array[i]);
+        printf("%.2f ", array[i]);
 }
 
 
 /*
  * 연산자인지 판별
  * @param : c - 비교할 문자
- * @return : 
+ * @return :
  *      1 - 덧셈
  *      2 - 뺄셈
  *      3 - 곱셈
@@ -923,13 +933,13 @@ int getFunctionValue(char str[], int functionIndex, int *valueLength, struct mVa
  * TODO: 수학함수 판별
  * @params : str[] = 변수 or 수학함수로 시작하는 수식
  * @return
-        0 = 함수 아님
-        1 = log
-        2 = pow
-        3 = sqrt
-        4 = sin
-        5 = cos
-        6 = tan
+ 0 = 함수 아님
+ 1 = log
+ 2 = pow
+ 3 = sqrt
+ 4 = sin
+ 5 = cos
+ 6 = tan
  */
 int checkFunction(char str[]) {
     if (isStartWith(str, "log"))
@@ -951,11 +961,11 @@ int checkFunction(char str[]) {
 /*
  * TODO : allStr이 startStr로 시작하는지 검사
  * @params
-        allStr[] : 전체 문자열
-        startStr[] : 기준 문자열
+ allStr[] : 전체 문자열
+ startStr[] : 기준 문자열
  * @return
-        0 : startStr로 시작하지 않음
-        1 : startStr로 시작함
+ 0 : startStr로 시작하지 않음
+ 1 : startStr로 시작함
  */
 int isStartWith(char allStr[], char startStr[]) {
     int index = 0;
@@ -1079,8 +1089,8 @@ void reverse(char stack[], int size) {
 /*
  * 수를 문자열로 바꾸는 함수
  * @param
-        str[] = 저장할 문자열 배열
-        num = 바꿀 수
+ str[] = 저장할 문자열 배열
+ num = 바꿀 수
  */
 void convertToString(char str[], int num) {
     int index = 0;
@@ -1129,16 +1139,16 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
  */
 int isOperation(char str[]) {
     int index = 0;
-	while (str[index++] != '\0')
-		if (str[index] == '=')
-			return 0;
-	return 1;
+    while (str[index++] != '\0')
+        if (str[index] == '=')
+            return 0;
+    return 1;
 }
 
 
 // 중위표기법 -> 후위 표기법
 void convertToLast() {
-
+    
 }
 
 
@@ -1148,10 +1158,10 @@ void convertToLast() {
  * @return : 문자열 길이
  */
 int getLength(char str[]) {
-	int count = 0;
-	while(*str++ != '\0')
-		count++;
-	return count;
+    int count = 0;
+    while(*str++ != '\0')
+        count++;
+    return count;
 }
 
 
@@ -1162,9 +1172,9 @@ int getLength(char str[]) {
  */
 char getVariable(char str[]) {
     int index = 0;
-	while(str[index] == ' ')
+    while(str[index] == ' ')
         index++;
-	return str[index];
+    return str[index];
 }
 
 
