@@ -77,6 +77,7 @@ void sort();
 void removeEnterInFgetsString(char[]);
 void copyStr(char[], char[]);
 int isEqual(char[], char[]);
+int isInt(char);
 
 
 int main(void) {
@@ -614,7 +615,7 @@ void posifixNotaion(char str[], int length) {
                 break;
                 
             default:
-                while (str[i] >= '0' && str[i] <= '9') {
+                while (isInt(str[i])) {
                     result[resultCount++] = str[i];
                     i++;
                 }
@@ -672,7 +673,7 @@ void posifixNotaion(char str[], int length) {
             char curStack[10] = {'\0'};
             int curStackCount = 0;
             
-            while (result[i] >= '0' && result[i] <= '9') {
+            while (isInt(result[i])) {
                 push(curStack, result[i], curStackCount++);
                 i++;
             }
@@ -907,7 +908,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
             (*valueLength)++;
             i--;
         }
-        while (str[i] >= '0' && str[i] <= '9') {
+        while (isInt(str[i])) {
             (*valueLength)++;
             push(stack, str[i--], stackCount++);
         }
@@ -936,7 +937,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
             printf("Transformation : %s\n", str);
         }
         
-        while (str[i] >= '0' && str[i] <= '9') {
+        while (isInt(str[i])) {
             (*valueLength)++;
             push(stack, str[i++], stackCount++);
         }
@@ -951,16 +952,31 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
 
 
 /*
+ * char가 숫자인지 판별
+ * @param
+ *      c : 비교할 문자
+ * @return
+ *      1 : int
+ *      2 : not int
+ */
+int isInt(char c) {
+    if (c >= '0' && c <= '9')
+        return 1;
+    return 0;
+}
+
+
+/*
  * TODO: 수학함수 판별
  * @params : str[] = 변수 or 수학함수로 시작하는 수식
  * @return
- 0 = 함수 아님
- 1 = log
- 2 = pow
- 3 = sqrt
- 4 = sin
- 5 = cos
- 6 = tan
+ * 0 = 함수 아님
+ * 1 = log
+ * 2 = pow
+ * 3 = sqrt
+ * 4 = sin
+ * 5 = cos
+ * 6 = tan
  */
 int checkFunction(char str[]) {
     if (isStartWith(str, "log"))
@@ -1095,6 +1111,8 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
     char valueStr[100] = {'\0'};
     char var = str[index];
     int valueIndex = 0, i;
+    
+    // 변수명에 맞는 변수 배열 index 찾기
     while (regVariable[valueIndex].name != var) {
         valueIndex++;
     }
@@ -1104,6 +1122,7 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
     // int -> string
     convertToString(valueStr, curValue);
     
+    // 변수 -> 변수 값
     int length = getLength(valueStr);
     for (i = getLength(str); i > index; i--) {
         str[i + length - 1] = str[i];
@@ -1128,12 +1147,6 @@ int isOperation(char str[]) {
         if (str[index] == '=')
             return 0;
     return 1;
-}
-
-
-// 중위표기법 -> 후위 표기법
-void convertToLast() {
-    
 }
 
 
@@ -1173,7 +1186,7 @@ int getValue(char str[]) {
     int stackCount = 0, result = 0, count = 1, i = 0;
     while(str[i] < '0' || str[i] > '9')
         i++;
-    while(str[i] >= '0' && str[i] <= '9')
+    while(isInt(str[i]))
         push(stack, str[i++], stackCount++);
     
     while(!isEmpty(stack)) {
