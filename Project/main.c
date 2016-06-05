@@ -57,7 +57,7 @@ void convertToString(char[], int);
 void posifixNotaion();
 int checkOperator(char);
 int checkOperatorLevel(char, char);
-char convertToInt(char);
+int convertToInt(char[], int);
 void printDoubleArray(double[], int);
 
 // 스케줄관리 함수
@@ -678,11 +678,7 @@ void posifixNotaion(char str[], int length) {
             }
             i--;
             
-            int num = 0, mul = 1;
-            while (!isEmpty(curStack)) {
-                num += convertToInt(pop(curStack, --curStackCount)) * mul;
-                mul *= 10;
-            }
+            int num = convertToInt(curStack, curStackCount);
             pushDouble(numStack, num, numStackCount++);
         }
     }
@@ -1050,50 +1046,14 @@ char convertToChar(int num) {
 }
 
 
-char convertToInt(char num) {
-    int result;
-    switch (num) {
-        case '0':
-            result = 0;
-            break;
-            
-        case '1':
-            result = 1;
-            break;
-            
-        case '2':
-            result = 2;
-            break;
-            
-        case '3':
-            result = 3;
-            break;
-            
-        case '4':
-            result = 4;
-            break;
-            
-        case '5':
-            result = 5;
-            break;
-            
-        case '6':
-            result = 6;
-            break;
-            
-        case '7':
-            result = 7;
-            break;
-            
-        case '8':
-            result = 8;
-            break;
-            
-        default:
-            result = 9;
-            break;
+int convertToInt(char stack[], int length) {
+    int num = 0, mul = 1;
+    while (!isEmpty(stack)) {
+        num += (pop(stack, --length) - '0') * mul;
+        mul *= 10;
     }
-    return result;
+    
+    return num;
 }
 
 
