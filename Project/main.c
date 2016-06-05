@@ -81,7 +81,6 @@ int isEqual(char[], char[]);
 
 int main(void) {
     int menuChoice;
-    int subMenu;
     
     while(1){
         printf("\tMenu\n");
@@ -839,9 +838,9 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
         // 수학함수 + 수학함수 인자 <-> 결과 값
         for (i = 0; i < strLength - index + 1; i++) {
             if (i < valueLength)
-                str[index + i - tempLength2] = valueStr[i];
+                str[index + i - tempLength] = valueStr[i];
             else
-                str[index + i - tempLength2] = str[index + i + functionLength - valueLength - tempLength];
+                str[index + i - tempLength] = str[index + i + functionLength - valueLength - tempLength];
         }
     } else {                                    // not pow
         valueIndex = index + functionLength;
