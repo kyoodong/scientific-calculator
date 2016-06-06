@@ -1016,49 +1016,7 @@ int isStartWith(char allStr[], char startStr[]) {
 
 
 char convertToChar(int num) {
-    char c;
-    switch (num) {
-        case 0:
-            c = '0';
-            break;
-            
-        case 1:
-            c = '1';
-            break;
-            
-        case 2:
-            c = '2';
-            break;
-            
-        case 3:
-            c = '3';
-            break;
-            
-        case 4:
-            c = '4';
-            break;
-            
-        case 5:
-            c = '5';
-            break;
-            
-        case 6:
-            c = '6';
-            break;
-            
-        case 7:
-            c = '7';
-            break;
-            
-        case 8:
-            c = '8';
-            break;
-            
-        default:
-            c = '9';
-            break;
-    }
-    return c;
+    return num + '0';
 }
 
 
@@ -1100,6 +1058,7 @@ void convertToString(char str[], int num) {
         num /= 10;
     }
     reverse(str, index);
+    str[index] = '\0';
 }
 
 
