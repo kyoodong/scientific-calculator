@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <unistd.h>
 
 #define MAX_LENGTH 100
 //#define swap(a,b) {int t; t = a; a = b; b = t;}
@@ -37,6 +38,7 @@ char pop(char[], int);
 double popDouble(double[], int);
 void pushDouble(double[], double, int);
 int isEmpty(char[]);
+void reverse(char stack[], int);
 
 // 메뉴 함수
 void displaySchedule();
@@ -53,7 +55,8 @@ int replaceMathFunction(char[], int, int, struct mVariable[]);
 int getFunctionValue(char[], int, int, int*, struct mVariable[], int);
 int checkFunction(char[]);
 int isStartWith(char[], char[]);
-void convertToString(char[], int);
+void intToString(char[], int);
+void doubleToString(char [], double);
 void posifixNotaion();
 int checkOperator(char);
 int checkOperatorLevel(char, char);
@@ -575,6 +578,7 @@ void posifixNotaion(char str[], int length) {
                 }
                 result[resultCount++] = ' ';
                 printf("Posifix notation : %s\n", result);
+                sleep(0);
                 break;
                 
             case '+':
@@ -592,6 +596,7 @@ void posifixNotaion(char str[], int length) {
                 if (checkOperator(result[resultCount - 1])) {
                     result[resultCount++] = ' ';
                     printf("Posifix notation : %s\n", result);
+                    sleep(0);
                 }
                 break;
                 
@@ -611,17 +616,19 @@ void posifixNotaion(char str[], int length) {
                 if (checkOperator(result[resultCount - 1])) {
                     result[resultCount++] = ' ';
                     printf("Posifix notation : %s\n", result);
+                    sleep(0);
                 }
                 break;
                 
             default:
-                while (isInt(str[i])) {
+                while (isInt(str[i]) || str[i] == '.') {
                     result[resultCount++] = str[i];
                     i++;
                 }
                 i--;
                 result[resultCount++] = ' ';
                 printf("Posifix notation : %s\n", result);
+                sleep(0);
                 break;
         }
     }
@@ -632,6 +639,7 @@ void posifixNotaion(char str[], int length) {
         result[resultCount++] = c;
         result[resultCount++] = ' ';
         printf("Posifix notation : %s\n", result);
+        sleep(0);
     }
     
     // 계산
@@ -669,6 +677,7 @@ void posifixNotaion(char str[], int length) {
             printf("Posifix notation : ");
             printDoubleArray(numStack, numStackCount);
             printf("%s\n", result + i + 1);
+            sleep(0);
         } else {
             char curStack[10] = {'\0'};
             int curStackCount = 0;
@@ -687,10 +696,18 @@ void posifixNotaion(char str[], int length) {
 }
 
 
+/*
+ * TODO 수 출력
+ */
 void printDoubleArray(double array[], int size) {
     int i;
-    for (i = 0; i < size; i++)
-        printf("%.2f ", array[i]);
+    for (i = 0; i < size; i++) {
+        int num = array[i] * 100;
+        if (num % 100)
+            printf("%.2f ", array[i]);
+        else
+            printf("%.0f ", array[i]);
+    }
 }
 
 
@@ -777,11 +794,13 @@ void transformation(char str[], struct mVariable regVariable[]) {
         if (str[index] >= 'A' && str[index] <= 'Z') {
             index += replaceVariableToInt(str, index, regVariable) - 1;
             printf("Transformation : %s\n", str);
+            sleep(0);
         } else {
             int functionIndex = checkFunction((str + index));
             if (functionIndex != 0) {
                 replaceMathFunction(str, functionIndex, index, regVariable);
                 printf("Transformation : %s\n", str);
+                sleep(0);
             }
         }
         index++;
@@ -799,7 +818,8 @@ void transformation(char str[], struct mVariable regVariable[]) {
  */
 int replaceMathFunction(char str[], int functionIndex, int index, struct mVariable regVariable[]) {
     char valueStr[10] = {'\0'};         // 결과 값 String
-    int functionLength, valueIndex, value, valueLength, strLength, i;
+    int functionLength, valueIndex, valueLength, strLength, i;
+    double value;
     
     if (functionIndex == 3) {       // sqrt
         functionLength = 4;
@@ -826,17 +846,44 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
         value = pow(value, temp);
         
         // 결과 값 String 변환 (value -> valueStr)
-        convertToString(valueStr, value);
+        intToString(valueStr, value);
         valueLength = getLength(valueStr);
         strLength = getLength(str);
         
+        printf("length = %d\n", functionLength);
+        printf("value length = %d\n", valueLength);
+        printf("tempLength = %d\n", tempLength);
+        
         // 수학함수 + 수학함수 인자 <-> 결과 값
-        for (i = 0; i < strLength - index + 1; i++) {
+        for (i = 0; i < strLength - index + tempLength; i++) {
+            int startIndex = index + i - tempLength;
             if (i < valueLength)
-                str[index + i - tempLength] = valueStr[i];
+                str[startIndex] = valueStr[i];
             else
-                str[index + i - tempLength] = str[index + i + functionLength - valueLength - tempLength];
+                str[startIndex] = str[startIndex + functionLength - valueLength];
         }
+        
+        
+        
+//        if (functionLength > valueLength) {
+//            printf("1");
+//            for (i = strLength - index + 1; i > 0; i--) {
+//                int startIndex = index + i - tempLength;
+//                if (i < valueLength)
+//                    str[startIndex] = valueStr[i];
+//                else
+//                    str[startIndex] = str[startIndex + functionLength - valueLength];
+//            }
+//        } else {
+//            printf("2");
+//            for (i = 0; i < strLength - index + 1; i++) {
+//                int startIndex = index + i - tempLength;
+//                if (i < valueLength)
+//                    str[startIndex] = valueStr[i];
+//                else
+//                    str[startIndex] = str[startIndex + functionLength - valueLength];
+//            }
+//        }
     } else {                                    // not pow
         valueIndex = index + functionLength;
         value = getFunctionValue(str, valueIndex, functionIndex, &functionLength, regVariable, functionLength);
@@ -869,13 +916,26 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
                 break;
         }
         
+        int isInt = 0;
+        int valueInt = value * 100;
+        if (valueInt % 100 == 0) {
+            isInt = 1;
+        }
         // 결과 값 String 변환 (value -> valueStr)
-        convertToString(valueStr, value);
+        if (isInt) {
+            intToString(valueStr, (int) value);
+        } else {
+            doubleToString(valueStr, value);
+        }
         valueLength = getLength(valueStr);
         strLength = getLength(str);
+        printf("value = %f\n", value);
+        printf("index = %d\n", index);
+        printf("valueLength = %d\n", valueLength);
+        printf("%s\n", valueStr);
         
         // 수학함수 + 수학함수 인자 <-> 결과 값
-        for (i = 0; i < strLength - index - valueLength; i++) {
+        for (i = 0; i < strLength - index + 1; i++) {
             if (i < valueLength)
                 str[index + i] = valueStr[i];
             else
@@ -900,7 +960,6 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
 int getFunctionValue(char str[], int index, int functionIndex, int *valueLength, struct mVariable regVariable[], int functionLength) {
     char stack[10] = {'\0'};
     int stackCount = 0;
-    int count = 1;
     int result = 0;
     int i = index;
     if (functionIndex == 2) {
@@ -912,19 +971,8 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
             (*valueLength)++;
             push(stack, str[i--], stackCount++);
         }
-        char tempStack[10] = {'\0'};
-        int tempCount = 0;
-        
-        // tempStack = reverse of stack
-        while (!isEmpty(stack)) {
-            push(tempStack, pop(stack, --stackCount), tempCount++);
-        }
-        
-        while (!isEmpty(tempStack)) {
-            char c = pop(tempStack, --tempCount);
-            result += (c - '0') * count;
-            count *= 10;
-        }
+    
+        reverse(stack, stackCount);
     } else {
         while (str[i] == ' ') {
             (*valueLength)++;
@@ -935,18 +983,15 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
         if (str[i] >= 'A' && str[i] <= 'B') {
             replaceVariableToInt(&str[i], 0, regVariable);
             printf("Transformation : %s\n", str);
+            sleep(0);
         }
         
         while (isInt(str[i])) {
             (*valueLength)++;
             push(stack, str[i++], stackCount++);
         }
-        while(!isEmpty(stack)) {
-            char c = pop(stack, --stackCount);
-            result += (c - '0') * count;
-            count *= 10;
-        }
     }
+    result = convertToInt(stack, stackCount);
     return result;
 }
 
@@ -1048,14 +1093,43 @@ void reverse(char stack[], int size) {
 /*
  * 수를 문자열로 바꾸는 함수
  * @param
- str[] = 저장할 문자열 배열
- num = 바꿀 수
+ * str[] = 저장할 문자열 배열
+ * num = 바꿀 수
  */
-void convertToString(char str[], int num) {
+void intToString(char str[], int num) {
     int index = 0;
     while (num) {
         push(str, convertToChar(num % 10), index++);
         num /= 10;
+    }
+    reverse(str, index);
+    str[index] = '\0';
+}
+
+
+/*
+ * 수를 문자열로 바꾸는 함수
+ * @param
+ * str[] = 저장할 문자열 배열
+ * num = 바꿀 수
+ */
+void doubleToString(char str[], double num) {
+    int numInt = num * 100, state = 0, sign = 1;
+    if (numInt < 100)
+        state = 1;
+    if (sign < 0)
+        sign = 0;
+    int index = 0;
+    while (numInt) {
+        push(str, convertToChar(numInt % 10), index++);
+        numInt /= 10;
+        if (index == 2)
+            push(str, '.', index++);
+    }
+    if (state)
+        push(str, '0', index++);
+    if (!sign) {
+        push(str, '-', index++);
     }
     reverse(str, index);
     str[index] = '\0';
@@ -1079,7 +1153,7 @@ int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) 
     int curValue = regVariable[valueIndex].value;
     
     // int -> string
-    convertToString(valueStr, curValue);
+    intToString(valueStr, curValue);
     
     // 변수 -> 변수 값
     int length = getLength(valueStr);
