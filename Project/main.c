@@ -1,8 +1,21 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <stdlib.h> // system
 #include <math.h>
-#include <unistd.h>
+#include <term.h>
+#include <unistd.h> // sleep
+
+int getch(void)
+{
+    struct termios oldt, newt;
+    int ch;
+    tcgetattr( STDIN_FILENO, &oldt );
+    newt = oldt;
+    newt.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+    ch = getchar();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+    return ch;
+}
 
 #define MAX_LENGTH 100
 //#define swap(a,b) {int t; t = a; a = b; b = t;}
@@ -61,6 +74,7 @@ void posifixNotaion();
 int checkOperator(char);
 int checkOperatorLevel(char, char);
 int convertToInt(char[], int);
+double convertToDouble(char[], int);
 void printDoubleArray(double[], int);
 
 // 스케줄관리 함수
@@ -80,7 +94,9 @@ void sort();
 void removeEnterInFgetsString(char[]);
 void copyStr(char[], char[]);
 int isEqual(char[], char[]);
-int isInt(char);
+int isNumber(char);
+int isInt(double);
+int isDouble(char []);
 
 
 int main(void) {
@@ -106,7 +122,7 @@ int main(void) {
                 
             case 3:
                 // 종료
-                printf("종료됩니다.\n");
+                system("clear");
                 break;
         }
         if(menuChoice == 3)
@@ -195,10 +211,10 @@ void deleteSchedule() {
     } else
     {
         printf("%d년 %d월 %d일의 일정이 없습니다.\n", year, month, day);
-        printf("일치하는 일정이 없습니다.\n");
     }
     printf("아무키나 입력하세요.........");
-    getchar();
+    fflush(stdin);
+    getch();
 }
 
 
@@ -209,7 +225,8 @@ void deleteSchedule() {
  */
 void insertSchedule(int scheduleCount) {
     int i;
-    int year, month, day;
+    int year, month, day, overwrite = 0;
+    char answer;
     char schedule[MAX_LENGTH];
     while (1) {
         printf("입력 : ");
@@ -219,25 +236,22 @@ void insertSchedule(int scheduleCount) {
         removeEnterInFgetsString(schedule);
         
         // 날짜 제대로 입력했는지 확인
-        if (checkDateValidation(year, month, day)) {
+        if (checkDateValidation(year, month, day))
             break;
-        }
     }
     printf("출력 : %d년 %d월 %d일 %s\n", year, month, day, schedule);
     
     // 일정 겹치는지 확인
-    int overwrite = 0;
     for (i = 0; i < scheduleCount; i++) {
         // 겹침
         if (mSchedule[i].year == year && mSchedule[i].month == month && mSchedule[i].day == day) {
-            char answer;
             printf("해당 날짜에 이미 일정이 있습니다. 일정을 추가하려면Yes, 덮어쓰려면 No를 입력하세요(Y or N)");
             answer = getchar();
             getchar();
             // 추가
-            if (answer == 'Y' || answer == 'y') {
+            if (answer == 'Y' || answer == 'y')
                 break ;
-            }
+            
             // x되돌아가기 덮어쓰기
             else
             {
@@ -245,8 +259,6 @@ void insertSchedule(int scheduleCount) {
                 scheduleCount = i;
                 break;
             }
-            //overwrite = 0 ;
-            //break;
         }
     }
     
@@ -254,18 +266,16 @@ void insertSchedule(int scheduleCount) {
     mSchedule[scheduleCount].month = month;
     mSchedule[scheduleCount].day = day;
     copyStr(schedule, mSchedule[scheduleCount].schedule);
-    if (overwrite == 0) { // Yes를 입력했을때 or 일정이 없어서 추가
+    if (overwrite)
+        printf("일정을 덮어썼습니다.\n");
+    else {
         scheduleCount++;
         mScheduleCount++;
         printf("일정을 추가하였습니다.\n");
-        printf("아무키나 입력하세요.......");
     }
-    
-    else { // No를 입력했을때
-        printf("일정을 덮어썼습니다.\n");
-        printf("아무키나 입력하세요.......");
-    }
-    getchar();
+    printf("아무키나 입력하세요.......");
+    fflush(stdin);
+    getch();
     system("clear");
     sort();
 }
@@ -277,6 +287,9 @@ void insertSchedule(int scheduleCount) {
  *      year = 연
  *      month = 월
  *      day = 일
+ * @return
+ *      1 = 날짜 제대로 입력함
+ *      0 = 없는 날짜 입력함
  */
 int checkDateValidation(int year, int month, int day) {
     // 1 ~ 12월 입력했는지 확인
@@ -295,6 +308,9 @@ int checkDateValidation(int year, int month, int day) {
  * TODO : 월 제대로 입력했는지 확인
  * @param :
  *      month = 월
+ * @return
+ *      1 = 1 ~ 12월 입력함
+ *      0 = 이외의 월 입력
  */
 int checkMonthValidation(int month) {
     if (month >= 1 && month <= 12)
@@ -309,6 +325,9 @@ int checkMonthValidation(int month) {
  *      year = 년
  *      month = 월
  *      day = 일
+ * @return :
+ *      1 = 각 월에 존재하는 일 입력
+ *      2 = 존재하지 않는 일 입력 예)32일
  */
 int checkDayValidation(int year, int month, int day) {
     int leap = isLeapYear(year);
@@ -490,6 +509,7 @@ int getLeapYear(int year, int month) {
 }
 
 
+///////////////////////////////계산기///////////////////////
 /*
  * TODO : 계산기 main
  */
@@ -537,10 +557,7 @@ void calculator() {
         } else if (isEqual(str, "!@#$")) {
             system("clear");
             break;
-        }
-        
-        // 연산식이면
-        else {
+        } else {      // 연산식이면
             transformation(str, regVariable);           // 변수나 수학 함수를 수로 변환
             posifixNotaion(str, getLength(str));           // 후위 표기법으로 변환
         }
@@ -557,7 +574,7 @@ void calculator() {
 void posifixNotaion(char str[], int length) {
     char result[MAX_LENGTH] = {'\0'};
     char stack[MAX_LENGTH] = {'\0'};
-    int resultCount = 0, count = 0, i;
+    int resultCount = 0, count = 0, i, isOperator = 0;
     char temp;
     double numStack[MAX_LENGTH] = {0};
     double numStackCount = 0;
@@ -583,45 +600,58 @@ void posifixNotaion(char str[], int length) {
                 
             case '+':
             case '-':
-                while (!isEmpty(stack)) {
-                    temp = pop(stack, --count);
-                    if (checkOperator(temp)) {
-                        result[resultCount++] = temp;
-                    } else {
-                        push(stack, temp, count++);
-                        break;
+                if (isOperator) {
+                    while (!isEmpty(stack)) {
+                        temp = pop(stack, --count);
+                        if (checkOperator(temp)) {
+                            result[resultCount++] = temp;
+                        } else {
+                            push(stack, temp, count++);
+                            break;
+                        }
                     }
-                }
-                push(stack, str[i], count++);
-                if (checkOperator(result[resultCount - 1])) {
-                    result[resultCount++] = ' ';
-                    printf("Posifix notation : %s\n", result);
-                    sleep(0);
-                }
+                    push(stack, str[i], count++);
+                    if (checkOperator(result[resultCount - 1])) {
+                        result[resultCount++] = ' ';
+                        printf("Posifix notation : %s\n", result);
+                        sleep(0);
+                    }
+                    isOperator = 0;
+                } else if (str[i] == '-') {
+                    isOperator = -1;
+                } else
+                    isOperator = 1;
                 break;
                 
             case '*':
             case '/':
-                while (!isEmpty(stack)) {
-                    temp = pop(stack, --count);
-                    // 우선순위가 같다면
-                    if (checkOperatorLevel(temp, str[i]) == 1) {
-                        result[resultCount++] = temp;
-                    } else {
-                        push(stack, temp, count++);
-                        break;
+                if (isOperator) {
+                    while (!isEmpty(stack)) {
+                        temp = pop(stack, --count);
+                        // 우선순위가 같다면
+                        if (checkOperatorLevel(temp, str[i]) == 1) {
+                            result[resultCount++] = temp;
+                        } else {
+                            push(stack, temp, count++);
+                            break;
+                        }
                     }
-                }
-                push(stack, str[i], count++);
-                if (checkOperator(result[resultCount - 1])) {
-                    result[resultCount++] = ' ';
-                    printf("Posifix notation : %s\n", result);
-                    sleep(0);
-                }
+                    push(stack, str[i], count++);
+                    if (checkOperator(result[resultCount - 1])) {
+                        result[resultCount++] = ' ';
+                        printf("Posifix notation : %s\n", result);
+                        sleep(0);
+                    }
+                    isOperator = 0;
+                } else
+                    isOperator = 1;
                 break;
                 
             default:
-                while (isInt(str[i]) || str[i] == '.') {
+                if (isOperator == -1) {
+                    result[resultCount++] = '-';
+                }
+                while (isNumber(str[i]) || str[i] == '.') {
                     result[resultCount++] = str[i];
                     i++;
                 }
@@ -629,6 +659,7 @@ void posifixNotaion(char str[], int length) {
                 result[resultCount++] = ' ';
                 printf("Posifix notation : %s\n", result);
                 sleep(0);
+                isOperator = 1;
                 break;
         }
     }
@@ -642,6 +673,8 @@ void posifixNotaion(char str[], int length) {
         sleep(0);
     }
     
+    isOperator = 0;
+    
     // 계산
     for (i = 0; result[i] != '\0'; i++) {
         if (result[i] == ' ') {
@@ -650,6 +683,11 @@ void posifixNotaion(char str[], int length) {
         int operator;
         if ((operator = checkOperator(result[i]))) {
             double num1 = popDouble(numStack, --numStackCount);
+            if (numStackCount == 0 && operator == 2) {       // numStack 비었음
+                pushDouble(numStack, num1, numStackCount++);
+                isOperator = 1;
+                continue;
+            }
             double num2 = popDouble(numStack, --numStackCount);
             
             switch (operator) {
@@ -682,17 +720,29 @@ void posifixNotaion(char str[], int length) {
             char curStack[10] = {'\0'};
             int curStackCount = 0;
             
-            while (isInt(result[i])) {
+            while (isNumber(result[i]) || result[i] == '.') {
                 push(curStack, result[i], curStackCount++);
                 i++;
             }
-            i--;
+//            i--;
             
-            int num = convertToInt(curStack, curStackCount);
-            pushDouble(numStack, num, numStackCount++);
+            double num;
+            if (isDouble(curStack))
+                num = convertToDouble(curStack, curStackCount);
+            else
+                num = convertToInt(curStack, curStackCount);
+            if (isOperator)
+                pushDouble(numStack, -num, numStackCount++);
+            else
+                pushDouble(numStack, num, numStackCount++);
+//            printf("stack추가\n");
         }
     }
-    printf("\n");
+    printf("Result : ");
+    printDoubleArray(numStack, numStackCount);
+    printf("\n계속하려면 Enter키를 입력하세요.\n");
+    getchar();
+    system("clear");
 }
 
 
@@ -850,10 +900,6 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
         valueLength = getLength(valueStr);
         strLength = getLength(str);
         
-        printf("length = %d\n", functionLength);
-        printf("value length = %d\n", valueLength);
-        printf("tempLength = %d\n", tempLength);
-        
         // 수학함수 + 수학함수 인자 <-> 결과 값
         for (i = 0; i < strLength - index + tempLength; i++) {
             int startIndex = index + i - tempLength;
@@ -862,28 +908,6 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
             else
                 str[startIndex] = str[startIndex + functionLength - valueLength];
         }
-        
-        
-        
-//        if (functionLength > valueLength) {
-//            printf("1");
-//            for (i = strLength - index + 1; i > 0; i--) {
-//                int startIndex = index + i - tempLength;
-//                if (i < valueLength)
-//                    str[startIndex] = valueStr[i];
-//                else
-//                    str[startIndex] = str[startIndex + functionLength - valueLength];
-//            }
-//        } else {
-//            printf("2");
-//            for (i = 0; i < strLength - index + 1; i++) {
-//                int startIndex = index + i - tempLength;
-//                if (i < valueLength)
-//                    str[startIndex] = valueStr[i];
-//                else
-//                    str[startIndex] = str[startIndex + functionLength - valueLength];
-//            }
-//        }
     } else {                                    // not pow
         valueIndex = index + functionLength;
         value = getFunctionValue(str, valueIndex, functionIndex, &functionLength, regVariable, functionLength);
@@ -916,23 +940,16 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
                 break;
         }
         
-        int isInt = 0;
-        int valueInt = value * 100;
-        if (valueInt % 100 == 0) {
-            isInt = 1;
-        }
+        int is_int = isInt(value);
+        
         // 결과 값 String 변환 (value -> valueStr)
-        if (isInt) {
+        if (is_int) {
             intToString(valueStr, (int) value);
         } else {
             doubleToString(valueStr, value);
         }
         valueLength = getLength(valueStr);
         strLength = getLength(str);
-        printf("value = %f\n", value);
-        printf("index = %d\n", index);
-        printf("valueLength = %d\n", valueLength);
-        printf("%s\n", valueStr);
         
         // 수학함수 + 수학함수 인자 <-> 결과 값
         for (i = 0; i < strLength - index + 1; i++) {
@@ -944,6 +961,25 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
     }
     
     return valueLength;
+}
+
+
+int isInt(double value) {
+    int valueInt = value * 100;
+    if (valueInt % 100 == 0)
+        return 1;
+    return 0;
+}
+
+
+int isDouble(char str[]) {
+    int i = 0;
+    while (str[i] != '\0') {
+        if (str[i] == '.')
+            return 1;
+        i++;
+    }
+    return 0;
 }
 
 
@@ -967,7 +1003,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
             (*valueLength)++;
             i--;
         }
-        while (isInt(str[i])) {
+        while (isNumber(str[i])) {
             (*valueLength)++;
             push(stack, str[i--], stackCount++);
         }
@@ -986,7 +1022,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
             sleep(0);
         }
         
-        while (isInt(str[i])) {
+        while (isNumber(str[i])) {
             (*valueLength)++;
             push(stack, str[i++], stackCount++);
         }
@@ -1004,7 +1040,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
  *      1 : int
  *      2 : not int
  */
-int isInt(char c) {
+int isNumber(char c) {
     if (c >= '0' && c <= '9')
         return 1;
     return 0;
@@ -1076,6 +1112,33 @@ int convertToInt(char stack[], int length) {
 }
 
 
+double convertToDouble(char stack[], int length) {
+    int state = 0;
+    double result = 0;
+    
+    int realNum = 0, mul = 1, num = 0;
+    while (!isEmpty(stack)) {
+        char c = pop(stack, --length);
+        // 정수부 전환
+        if (c == '.') {
+            state = 1;
+            mul = 1;
+        } else {
+            if (!state) {       // 실수부
+                realNum += (c - '0') * mul;
+                mul *= 10;
+            } else {        // 정수부
+                num += (c - '0') * mul;
+                mul *= 10;
+            }
+        }
+    }
+    result += num;
+    result += realNum / 100.0;
+    return result;
+}
+
+
 /*
  * 스택 순서 뒤집기
  */
@@ -1117,8 +1180,10 @@ void doubleToString(char str[], double num) {
     int numInt = num * 100, state = 0, sign = 1;
     if (numInt < 100)
         state = 1;
-    if (sign < 0)
+    if (numInt < 0) {
         sign = 0;
+        numInt *= -1;
+    }
     int index = 0;
     while (numInt) {
         push(str, convertToChar(numInt % 10), index++);
@@ -1219,7 +1284,7 @@ int getValue(char str[]) {
     int stackCount = 0, result = 0, count = 1, i = 0;
     while(str[i] < '0' || str[i] > '9')
         i++;
-    while(isInt(str[i]))
+    while(isNumber(str[i]))
         push(stack, str[i++], stackCount++);
     
     while(!isEmpty(stack)) {
