@@ -97,6 +97,8 @@ int isEqual(char[], char[]);
 int isNumber(char);
 int isInt(double);
 int isDouble(char []);
+int charToInt(char);
+char intToChar(int);
 
 
 int main(void) {
@@ -595,7 +597,7 @@ void posifixNotaion(char str[], int length) {
                 }
                 result[resultCount++] = ' ';
                 printf("Posifix notation : %s\n", result);
-                sleep(0);
+                sleep(3);
                 break;
                 
             case '+':
@@ -614,7 +616,7 @@ void posifixNotaion(char str[], int length) {
                     if (checkOperator(result[resultCount - 1])) {
                         result[resultCount++] = ' ';
                         printf("Posifix notation : %s\n", result);
-                        sleep(0);
+                        sleep(3);
                     }
                     isOperator = 0;
                 } else if (str[i] == '-') {
@@ -640,7 +642,7 @@ void posifixNotaion(char str[], int length) {
                     if (checkOperator(result[resultCount - 1])) {
                         result[resultCount++] = ' ';
                         printf("Posifix notation : %s\n", result);
-                        sleep(0);
+                        sleep(3);
                     }
                     isOperator = 0;
                 } else
@@ -658,7 +660,7 @@ void posifixNotaion(char str[], int length) {
                 i--;
                 result[resultCount++] = ' ';
                 printf("Posifix notation : %s\n", result);
-                sleep(0);
+                sleep(3);
                 isOperator = 1;
                 break;
         }
@@ -670,7 +672,7 @@ void posifixNotaion(char str[], int length) {
         result[resultCount++] = c;
         result[resultCount++] = ' ';
         printf("Posifix notation : %s\n", result);
-        sleep(0);
+        sleep(3);
     }
     
     isOperator = 0;
@@ -715,7 +717,7 @@ void posifixNotaion(char str[], int length) {
             printf("Posifix notation : ");
             printDoubleArray(numStack, numStackCount);
             printf("%s\n", result + i + 1);
-            sleep(0);
+            sleep(3);
         } else {
             char curStack[10] = {'\0'};
             int curStackCount = 0;
@@ -735,7 +737,6 @@ void posifixNotaion(char str[], int length) {
                 pushDouble(numStack, -num, numStackCount++);
             else
                 pushDouble(numStack, num, numStackCount++);
-//            printf("stack추가\n");
         }
     }
     printf("Result : ");
@@ -748,6 +749,9 @@ void posifixNotaion(char str[], int length) {
 
 /*
  * TODO 수 출력
+ * @params :
+ *      array[] = 출력할 double 리스트
+ *      size = double 리스트 크기
  */
 void printDoubleArray(double array[], int size) {
     int i;
@@ -762,7 +766,7 @@ void printDoubleArray(double array[], int size) {
 
 
 /*
- * 연산자인지 판별
+ * TODO 연산자인지 판별
  * @param : c - 비교할 문자
  * @return :
  *      1 - 덧셈
@@ -844,13 +848,13 @@ void transformation(char str[], struct mVariable regVariable[]) {
         if (str[index] >= 'A' && str[index] <= 'Z') {
             index += replaceVariableToInt(str, index, regVariable) - 1;
             printf("Transformation : %s\n", str);
-            sleep(0);
+            sleep(3);
         } else {
             int functionIndex = checkFunction((str + index));
             if (functionIndex != 0) {
                 replaceMathFunction(str, functionIndex, index, regVariable);
                 printf("Transformation : %s\n", str);
-                sleep(0);
+                sleep(3);
             }
         }
         index++;
@@ -1019,7 +1023,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
         if (str[i] >= 'A' && str[i] <= 'B') {
             replaceVariableToInt(&str[i], 0, regVariable);
             printf("Transformation : %s\n", str);
-            sleep(0);
+            sleep(3);
         }
         
         while (isNumber(str[i])) {
@@ -1096,11 +1100,37 @@ int isStartWith(char allStr[], char startStr[]) {
 }
 
 
-char convertToChar(int num) {
+/*
+ * TODO : 숫자 -> 문자
+ * @params :
+ *      num = 바꿀 숫자
+ * @return
+ *      바뀐 char형 숫자
+ */
+char intToChar(int num) {
     return num + '0';
 }
 
 
+/*
+ * TODO : 문자 -> 숫자
+ * @params :
+ *      c = 바꿀 문자
+ * @return
+ *      숫자
+ */
+int charToInt(char c) {
+    return c - '0';
+}
+
+
+/*
+ * TODO : stack을 정수로 변환
+ * @params :
+ *      stack[] = 변환할 stack
+ *      length = 스택 길이
+ * @return : 변환된 정수
+ */
 int convertToInt(char stack[], int length) {
     int num = 0, mul = 1;
     while (!isEmpty(stack)) {
@@ -1112,6 +1142,13 @@ int convertToInt(char stack[], int length) {
 }
 
 
+/*
+ * TODO : stack을 정수로 변환
+ * @params :
+ *      stack[] = 변환할 stack
+ *      length = 스택 길이
+ * @return : 변환된 실수
+ */
 double convertToDouble(char stack[], int length) {
     int state = 0;
     double result = 0;
@@ -1125,10 +1162,10 @@ double convertToDouble(char stack[], int length) {
             mul = 1;
         } else {
             if (!state) {       // 실수부
-                realNum += (c - '0') * mul;
+                realNum += charToInt(c) * mul;
                 mul *= 10;
             } else {        // 정수부
-                num += (c - '0') * mul;
+                num += charToInt(c) * mul;
                 mul *= 10;
             }
         }
@@ -1140,7 +1177,10 @@ double convertToDouble(char stack[], int length) {
 
 
 /*
- * 스택 순서 뒤집기
+ * TODO : 스택 순서 뒤집기
+ * @params :
+ *      stack[] = 스택
+ *      size = 스택 크기
  */
 void reverse(char stack[], int size) {
     int i, j = size / 2;
@@ -1154,15 +1194,15 @@ void reverse(char stack[], int size) {
 
 
 /*
- * 수를 문자열로 바꾸는 함수
- * @param
- * str[] = 저장할 문자열 배열
- * num = 바꿀 수
+ * TODO : 수를 문자열로 바꾸는 함수
+ * @params :
+ *      str[] = 저장할 문자열 배열
+ *      num = 바꿀 수
  */
 void intToString(char str[], int num) {
     int index = 0;
     while (num) {
-        push(str, convertToChar(num % 10), index++);
+        push(str, intToChar(num % 10), index++);
         num /= 10;
     }
     reverse(str, index);
@@ -1171,10 +1211,10 @@ void intToString(char str[], int num) {
 
 
 /*
- * 수를 문자열로 바꾸는 함수
- * @param
- * str[] = 저장할 문자열 배열
- * num = 바꿀 수
+ * TODO : 수를 문자열로 바꾸는 함수
+ * @params :
+ *      str[] = 저장할 문자열 배열
+ *      num = 바꿀 수
  */
 void doubleToString(char str[], double num) {
     int numInt = num * 100, state = 0, sign = 1;
@@ -1186,7 +1226,7 @@ void doubleToString(char str[], double num) {
     }
     int index = 0;
     while (numInt) {
-        push(str, convertToChar(numInt % 10), index++);
+        push(str, intToChar(numInt % 10), index++);
         numInt /= 10;
         if (index == 2)
             push(str, '.', index++);
@@ -1203,7 +1243,11 @@ void doubleToString(char str[], double num) {
 
 
 /*
- * 변수를 숫자로 대체하는 함수
+ * TODO : 변수를 숫자로 대체하는 함수
+ * @params :
+ *      str[] = 수식
+ *      index = 변수 위치
+ *      regVariable[] = 변수 리스트
  */
 int replaceVariableToInt(char str[], int index, struct mVariable regVariable[]) {
     char valueStr[MAX_LENGTH] = {'\0'};
@@ -1262,7 +1306,7 @@ int getLength(char str[]) {
 
 
 /*
- * 문자열 중 변수 추출
+ * TODO : 문자열 중 변수 추출
  * Input : A = 10
  * Output : A
  */
@@ -1275,14 +1319,14 @@ char getVariable(char str[]) {
 
 
 /*
- * 문자열 중 변수 값 추출
+ * TODO : 문자열 중 변수 값 추출
  * Input : A = 10
  * Output : 10
  */
 int getValue(char str[]) {
     char stack[MAX_LENGTH] = {'\0'};
     int stackCount = 0, result = 0, count = 1, i = 0;
-    while(str[i] < '0' || str[i] > '9')
+    while(!isNumber(str[i]))
         i++;
     while(isNumber(str[i]))
         push(stack, str[i++], stackCount++);
@@ -1298,10 +1342,10 @@ int getValue(char str[]) {
 
 /*
  * TODO : 스택에 문자 하나 추가
- * @params
- *      stack[] : 스택
- *      chr : 넣을 문자
- *      top : 스택 크기
+ * @params :
+ *      stack[] = 스택
+ *      chr = 넣을 문자
+ *      top = 스택 크기
  */
 void push(char stack[], char chr, int top) {
     stack[top] = chr;
@@ -1311,9 +1355,9 @@ void push(char stack[], char chr, int top) {
 /*
  * TODO : 스택에 수 하나 추가
  * @params
- *      stack[] : 스택
- *      num : 넣을 수
- *      top : 스택 크기
+ *      stack[] = 스택
+ *      num = 넣을 수
+ *      top = 스택 크기
  */
 void pushDouble(double stack[], double num, int top) {
     stack[top] = num;
@@ -1322,10 +1366,11 @@ void pushDouble(double stack[], double num, int top) {
 
 /*
  * TODO : 스택에 있는 문자 하나 출력
- * @params
- *      stack[] : 스택
- *      top : 스택 크기
- * @return - 스택 맨 위 값
+ * @params :
+ *      stack[] = 스택
+ *      top = 스택 크기
+ * @return :
+ *      스택 맨 위 값
  */
 char pop(char stack[], int top) {
     char c = stack[top];
@@ -1336,10 +1381,11 @@ char pop(char stack[], int top) {
 
 /*
  * TODO : 스택에 있는 숫자 하나 출력
- * @params
- *      stack[] : 스택
- *      top : 스택 크기
- * @return - 스택 맨 위 값
+ * @params :
+ *      stack[] = 스택
+ *      top = 스택 크기
+ * @return :
+ *      스택 맨 위 값
  */
 double popDouble(double stack[], int top) {
     double c = stack[top];
@@ -1350,11 +1396,11 @@ double popDouble(double stack[], int top) {
 
 /*
  * TODO : 스택이 비었는지 확인
- * @params
- *      stack[] : 스택
- * @return
- *      1 : 비었음
- *      0 : 안비었음
+ * @params :
+ *      stack[] = 스택
+ * @return :
+ *      1 = 비었음
+ *      0 = 안비었음
  */
 int isEmpty(char stack[]) {
     if (stack[0] == '\0')
@@ -1379,10 +1425,10 @@ void removeEnterInFgetsString(char str[]) {
 
 /*
  * TODO : 문자열 같은지 비교
- * @params
+ * @params :
  *      str1[] = 문자열
  *      str2[] = 문자열
- * @return
+ * @return :
  *      0 = 같지 않음
  *      1 = 같음
  */
@@ -1401,7 +1447,7 @@ int isEqual(char str1[], char str2[]) {
 
 /*
  * TODO : 문자열 복사
- * @params
+ * @params :
  *      fromStr[] = 복사될 문자열
  *      toStr[] = 저장 문자열
  */
