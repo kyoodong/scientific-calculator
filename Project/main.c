@@ -69,12 +69,12 @@ int getFunctionValue(char[], int, int, int*, struct mVariable[], int);
 int checkFunction(char[]);
 int isStartWith(char[], char[]);
 void intToString(char[], int);
-void doubleToString(char [], double);
-void posifixNotaion();
+void doubleToString(char[], double);
+void posifixNotaion(char[], int);
 int checkOperator(char);
 int checkOperatorLevel(char, char);
-int convertToInt(char[], int);
-double convertToDouble(char[], int);
+int stringToInt(char[], int);
+double stringToDouble(char[], int);
 void printDoubleArray(double[], int);
 
 // 스케줄관리 함수
@@ -109,7 +109,6 @@ int main(void) {
         printf("1) 공학용 계산기\n");
         printf("2) 스케줄 관리\n");
         printf("3) 프로그램 종료\n");
-        
         
         scanf("%d", &menuChoice);
         switch(menuChoice) {
@@ -726,13 +725,12 @@ void posifixNotaion(char str[], int length) {
                 push(curStack, result[i], curStackCount++);
                 i++;
             }
-//            i--;
             
             double num;
             if (isDouble(curStack))
-                num = convertToDouble(curStack, curStackCount);
+                num = stringToDouble(curStack, curStackCount);
             else
-                num = convertToInt(curStack, curStackCount);
+                num = stringToInt(curStack, curStackCount);
             if (isOperator)
                 pushDouble(numStack, -num, numStackCount++);
             else
@@ -837,7 +835,7 @@ int checkOperatorLevel(char operator1, char operator2) {
 
 
 /*
- * 변수들 숫자로 변환
+ * 변수와 수학함수 숫자로 변환
  * @params : *str = 연산식
  *           *variable = 변수 배열
  *           *value = 변수 값 배열
@@ -968,6 +966,14 @@ int replaceMathFunction(char str[], int functionIndex, int index, struct mVariab
 }
 
 
+/*
+ * TODO : 정수인지 검사
+ * @params :
+ *      str[] = 문자열
+ * @return :
+ *      1 = 정수
+ *      0 = 실수
+ */
 int isInt(double value) {
     int valueInt = value * 100;
     if (valueInt % 100 == 0)
@@ -976,6 +982,14 @@ int isInt(double value) {
 }
 
 
+/*
+ * TODO : 실수인지 검사
+ * @params :
+ *      str[] = 문자열
+ * @return :
+ *      1 = 실수
+ *      0 = 정수
+ */
 int isDouble(char str[]) {
     int i = 0;
     while (str[i] != '\0') {
@@ -1031,7 +1045,7 @@ int getFunctionValue(char str[], int index, int functionIndex, int *valueLength,
             push(stack, str[i++], stackCount++);
         }
     }
-    result = convertToInt(stack, stackCount);
+    result = stringToInt(stack, stackCount);
     return result;
 }
 
@@ -1083,11 +1097,11 @@ int checkFunction(char str[]) {
 /*
  * TODO : allStr이 startStr로 시작하는지 검사
  * @params
- allStr[] : 전체 문자열
- startStr[] : 기준 문자열
+ *      allStr[] : 전체 문자열
+ *      startStr[] : 기준 문자열
  * @return
- 0 : startStr로 시작하지 않음
- 1 : startStr로 시작함
+ *      0 : startStr로 시작하지 않음
+ *      1 : startStr로 시작함
  */
 int isStartWith(char allStr[], char startStr[]) {
     int index = 0;
@@ -1131,7 +1145,7 @@ int charToInt(char c) {
  *      length = 스택 길이
  * @return : 변환된 정수
  */
-int convertToInt(char stack[], int length) {
+int stringToInt(char stack[], int length) {
     int num = 0, mul = 1;
     while (!isEmpty(stack)) {
         num += (pop(stack, --length) - '0') * mul;
@@ -1149,7 +1163,7 @@ int convertToInt(char stack[], int length) {
  *      length = 스택 길이
  * @return : 변환된 실수
  */
-double convertToDouble(char stack[], int length) {
+double stringToDouble(char stack[], int length) {
     int state = 0;
     double result = 0;
     
